@@ -112,6 +112,38 @@ export interface AdministrationComparison {
   supremeCourtTimeline: TimelinePoint[];
 }
 
+export interface OverreachIncident {
+  id: number;
+  title: string;
+  administration: string;
+  year: number;
+  description: string;
+  /** court_injunction | constitutional_challenge | statutory_overreach | contempt | congressional_rebuke | other */
+  type: string;
+  /** blocked | overturned | upheld | pending | partially_upheld */
+  outcome: string;
+  /** judiciary | congress | states | international | other */
+  challenger: string;
+  significance: string;
+  references: Reference[];
+}
+
+export interface OverreachAdminStat {
+  administration: string;
+  president: string;
+  party: string;
+  startYear: number;
+  totalIncidents: number;
+  blocked: number;
+  overturned: number;
+  upheld: number;
+  pending: number;
+  courtInjunctions: number;
+  constitutionalChallenges: number;
+  statutoryOverreach: number;
+  congressionalRebukes: number;
+}
+
 export type ListActionsParams = {
 category?: string;
 administration?: string;
@@ -121,5 +153,10 @@ search?: string;
 export type ListSupremeCourtCasesParams = {
 administration?: string;
 outcome?: string;
+};
+
+export type ListOverreachIncidentsParams = {
+administration?: string;
+type?: string;
 };
 

@@ -156,6 +156,54 @@ export const GetSupremeCourtCaseResponse = zod.object({
 
 
 /**
+ * @summary List executive overreach incidents
+ */
+export const ListOverreachIncidentsQueryParams = zod.object({
+  "administration": zod.coerce.string().optional(),
+  "type": zod.coerce.string().optional()
+})
+
+export const ListOverreachIncidentsResponseItem = zod.object({
+  "id": zod.number(),
+  "title": zod.string(),
+  "administration": zod.string(),
+  "year": zod.number(),
+  "description": zod.string(),
+  "type": zod.string().describe('court_injunction | constitutional_challenge | statutory_overreach | contempt | congressional_rebuke | other'),
+  "outcome": zod.string().describe('blocked | overturned | upheld | pending | partially_upheld'),
+  "challenger": zod.string().describe('judiciary | congress | states | international | other'),
+  "significance": zod.string(),
+  "references": zod.array(zod.object({
+  "title": zod.string(),
+  "url": zod.string(),
+  "source": zod.string()
+}))
+})
+export const ListOverreachIncidentsResponse = zod.array(ListOverreachIncidentsResponseItem)
+
+
+/**
+ * @summary Get overreach statistics across administrations
+ */
+export const GetOverreachStatsResponseItem = zod.object({
+  "administration": zod.string(),
+  "president": zod.string(),
+  "party": zod.string(),
+  "startYear": zod.number(),
+  "totalIncidents": zod.number(),
+  "blocked": zod.number(),
+  "overturned": zod.number(),
+  "upheld": zod.number(),
+  "pending": zod.number(),
+  "courtInjunctions": zod.number(),
+  "constitutionalChallenges": zod.number(),
+  "statutoryOverreach": zod.number(),
+  "congressionalRebukes": zod.number()
+})
+export const GetOverreachStatsResponse = zod.array(GetOverreachStatsResponseItem)
+
+
+/**
  * @summary List all administrations with stats
  */
 export const ListAdministrationsResponseItem = zod.object({

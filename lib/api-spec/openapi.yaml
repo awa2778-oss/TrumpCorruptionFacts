@@ -160,6 +160,45 @@ paths:
               schema:
                 $ref: "#/components/schemas/ErrorResponse"
 
+  /overreach:
+    get:
+      operationId: listOverreachIncidents
+      tags: [overreach]
+      summary: List executive overreach incidents
+      parameters:
+        - name: administration
+          in: query
+          schema:
+            type: string
+        - name: type
+          in: query
+          schema:
+            type: string
+      responses:
+        "200":
+          description: List of overreach incidents
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/OverreachIncident"
+
+  /overreach/stats:
+    get:
+      operationId: getOverreachStats
+      tags: [overreach]
+      summary: Get overreach statistics across administrations
+      responses:
+        "200":
+          description: Overreach statistics per administration
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/OverreachAdminStat"
+
   /administrations:
     get:
       operationId: listAdministrations
@@ -447,3 +486,87 @@ components:
           type: integer
         perYear:
           type: number
+
+    OverreachIncident:
+      type: object
+      required:
+        - id
+        - title
+        - administration
+        - year
+        - description
+        - type
+        - outcome
+        - challenger
+        - significance
+        - references
+      properties:
+        id:
+          type: integer
+        title:
+          type: string
+        administration:
+          type: string
+        year:
+          type: integer
+        description:
+          type: string
+        type:
+          type: string
+          description: "court_injunction | constitutional_challenge | statutory_overreach | contempt | congressional_rebuke | other"
+        outcome:
+          type: string
+          description: "blocked | overturned | upheld | pending | partially_upheld"
+        challenger:
+          type: string
+          description: "judiciary | congress | states | international | other"
+        significance:
+          type: string
+        references:
+          type: array
+          items:
+            $ref: "#/components/schemas/Reference"
+
+    OverreachAdminStat:
+      type: object
+      required:
+        - administration
+        - president
+        - party
+        - startYear
+        - totalIncidents
+        - blocked
+        - overturned
+        - upheld
+        - pending
+        - courtInjunctions
+        - constitutionalChallenges
+        - statutoryOverreach
+        - congressionalRebukes
+      properties:
+        administration:
+          type: string
+        president:
+          type: string
+        party:
+          type: string
+        startYear:
+          type: integer
+        totalIncidents:
+          type: integer
+        blocked:
+          type: integer
+        overturned:
+          type: integer
+        upheld:
+          type: integer
+        pending:
+          type: integer
+        courtInjunctions:
+          type: integer
+        constitutionalChallenges:
+          type: integer
+        statutoryOverreach:
+          type: integer
+        congressionalRebukes:
+          type: integer

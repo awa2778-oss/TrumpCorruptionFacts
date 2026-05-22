@@ -23,7 +23,10 @@ import type {
   ErrorResponse,
   HealthStatus,
   ListActionsParams,
+  ListOverreachIncidentsParams,
   ListSupremeCourtCasesParams,
+  OverreachAdminStat,
+  OverreachIncident,
   SupremeCourtAdminStat,
   SupremeCourtCase
 } from './api.schemas';
@@ -581,6 +584,167 @@ export function useGetSupremeCourtCase<TData = Awaited<ReturnType<typeof getSupr
  ):  UseQueryResult<TData, TError> & { queryKey: QueryKey } {
 
   const queryOptions = getGetSupremeCourtCaseQueryOptions(id,options)
+
+  const query = useQuery(queryOptions) as  UseQueryResult<TData, TError> & { queryKey: QueryKey };
+
+  return { ...query, queryKey: queryOptions.queryKey };
+}
+
+
+
+
+
+
+
+export const getListOverreachIncidentsUrl = (params?: ListOverreachIncidentsParams,) => {
+  const normalizedParams = new URLSearchParams();
+
+  Object.entries(params || {}).forEach(([key, value]) => {
+
+    if (value !== undefined) {
+      normalizedParams.append(key, value === null ? 'null' : value.toString())
+    }
+  });
+
+  const stringifiedParams = normalizedParams.toString();
+
+  return stringifiedParams.length > 0 ? `/api/overreach?${stringifiedParams}` : `/api/overreach`
+}
+
+/**
+ * @summary List executive overreach incidents
+ */
+export const listOverreachIncidents = async (params?: ListOverreachIncidentsParams, options?: RequestInit): Promise<OverreachIncident[]> => {
+
+  return customFetch<OverreachIncident[]>(getListOverreachIncidentsUrl(params),
+  {
+    ...options,
+    method: 'GET'
+
+
+  }
+);}
+
+
+
+
+
+export const getListOverreachIncidentsQueryKey = (params?: ListOverreachIncidentsParams,) => {
+    return [
+    `/api/overreach`, ...(params ? [params] : [])
+    ] as const;
+    }
+
+
+export const getListOverreachIncidentsQueryOptions = <TData = Awaited<ReturnType<typeof listOverreachIncidents>>, TError = ErrorType<unknown>>(params?: ListOverreachIncidentsParams, options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof listOverreachIncidents>>, TError, TData>, request?: SecondParameter<typeof customFetch>}
+) => {
+
+const {query: queryOptions, request: requestOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getListOverreachIncidentsQueryKey(params);
+
+
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof listOverreachIncidents>>> = ({ signal }) => listOverreachIncidents(params, { signal, ...requestOptions });
+
+
+
+
+
+   return  { queryKey, queryFn, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof listOverreachIncidents>>, TError, TData> & { queryKey: QueryKey }
+}
+
+export type ListOverreachIncidentsQueryResult = NonNullable<Awaited<ReturnType<typeof listOverreachIncidents>>>
+export type ListOverreachIncidentsQueryError = ErrorType<unknown>
+
+
+/**
+ * @summary List executive overreach incidents
+ */
+
+export function useListOverreachIncidents<TData = Awaited<ReturnType<typeof listOverreachIncidents>>, TError = ErrorType<unknown>>(
+ params?: ListOverreachIncidentsParams, options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof listOverreachIncidents>>, TError, TData>, request?: SecondParameter<typeof customFetch>}
+
+ ):  UseQueryResult<TData, TError> & { queryKey: QueryKey } {
+
+  const queryOptions = getListOverreachIncidentsQueryOptions(params,options)
+
+  const query = useQuery(queryOptions) as  UseQueryResult<TData, TError> & { queryKey: QueryKey };
+
+  return { ...query, queryKey: queryOptions.queryKey };
+}
+
+
+
+
+
+
+
+export const getGetOverreachStatsUrl = () => {
+
+
+
+
+  return `/api/overreach/stats`
+}
+
+/**
+ * @summary Get overreach statistics across administrations
+ */
+export const getOverreachStats = async ( options?: RequestInit): Promise<OverreachAdminStat[]> => {
+
+  return customFetch<OverreachAdminStat[]>(getGetOverreachStatsUrl(),
+  {
+    ...options,
+    method: 'GET'
+
+
+  }
+);}
+
+
+
+
+
+export const getGetOverreachStatsQueryKey = () => {
+    return [
+    `/api/overreach/stats`
+    ] as const;
+    }
+
+
+export const getGetOverreachStatsQueryOptions = <TData = Awaited<ReturnType<typeof getOverreachStats>>, TError = ErrorType<unknown>>( options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof getOverreachStats>>, TError, TData>, request?: SecondParameter<typeof customFetch>}
+) => {
+
+const {query: queryOptions, request: requestOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getGetOverreachStatsQueryKey();
+
+
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof getOverreachStats>>> = ({ signal }) => getOverreachStats({ signal, ...requestOptions });
+
+
+
+
+
+   return  { queryKey, queryFn, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof getOverreachStats>>, TError, TData> & { queryKey: QueryKey }
+}
+
+export type GetOverreachStatsQueryResult = NonNullable<Awaited<ReturnType<typeof getOverreachStats>>>
+export type GetOverreachStatsQueryError = ErrorType<unknown>
+
+
+/**
+ * @summary Get overreach statistics across administrations
+ */
+
+export function useGetOverreachStats<TData = Awaited<ReturnType<typeof getOverreachStats>>, TError = ErrorType<unknown>>(
+  options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof getOverreachStats>>, TError, TData>, request?: SecondParameter<typeof customFetch>}
+
+ ):  UseQueryResult<TData, TError> & { queryKey: QueryKey } {
+
+  const queryOptions = getGetOverreachStatsQueryOptions(options)
 
   const query = useQuery(queryOptions) as  UseQueryResult<TData, TError> & { queryKey: QueryKey };
 
