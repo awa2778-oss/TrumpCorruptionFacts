@@ -3,20 +3,25 @@ info:
   # Do not change the title, if the title changes, the import paths will be broken
   title: Api
   version: 0.1.0
-  description: API specification
+  description: Administration Action Tracker API
 servers:
   - url: /api
     description: Base API path
 tags:
   - name: health
     description: Health operations
+  - name: actions
+    description: Administration actions
+  - name: supreme-court
+    description: Supreme Court cases
+  - name: administrations
+    description: Administration comparison data
 paths:
   /healthz:
     get:
       operationId: healthCheck
       tags: [health]
       summary: Health check
-      description: Returns server health status
       responses:
         "200":
           description: Healthy
@@ -24,6 +29,165 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/HealthStatus"
+
+  /actions:
+    get:
+      operationId: listActions
+      tags: [actions]
+      summary: List administration actions
+      parameters:
+        - name: category
+          in: query
+          schema:
+            type: string
+        - name: administration
+          in: query
+          schema:
+            type: string
+        - name: search
+          in: query
+          schema:
+            type: string
+      responses:
+        "200":
+          description: List of actions
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/AdministrationAction"
+
+  /actions/stats:
+    get:
+      operationId: getActionStats
+      tags: [actions]
+      summary: Get action statistics by category
+      responses:
+        "200":
+          description: Action statistics
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ActionStats"
+
+  /actions/{id}:
+    get:
+      operationId: getAction
+      tags: [actions]
+      summary: Get a single action
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Action
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AdministrationAction"
+        "404":
+          description: Not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+
+  /supreme-court:
+    get:
+      operationId: listSupremeCourtCases
+      tags: [supreme-court]
+      summary: List Supreme Court cases
+      parameters:
+        - name: administration
+          in: query
+          schema:
+            type: string
+        - name: outcome
+          in: query
+          schema:
+            type: string
+      responses:
+        "200":
+          description: List of Supreme Court cases
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/SupremeCourtCase"
+
+  /supreme-court/stats:
+    get:
+      operationId: getSupremeCourtStats
+      tags: [supreme-court]
+      summary: Get Supreme Court stats across administrations
+      responses:
+        "200":
+          description: Supreme Court statistics
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/SupremeCourtAdminStat"
+
+  /supreme-court/{id}:
+    get:
+      operationId: getSupremeCourtCase
+      tags: [supreme-court]
+      summary: Get a single Supreme Court case
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Case
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/SupremeCourtCase"
+        "404":
+          description: Not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+
+  /administrations:
+    get:
+      operationId: listAdministrations
+      tags: [administrations]
+      summary: List all administrations with stats
+      responses:
+        "200":
+          description: List of administrations
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Administration"
+
+  /administrations/compare:
+    get:
+      operationId: compareAdministrations
+      tags: [administrations]
+      summary: Comparative data across administrations
+      responses:
+        "200":
+          description: Comparison data
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AdministrationComparison"
+
 components:
   schemas:
     HealthStatus:
@@ -34,3 +198,252 @@ components:
       required:
         - status
 
+    ErrorResponse:
+      type: object
+      properties:
+        error:
+          type: string
+      required:
+        - error
+
+    AdministrationAction:
+      type: object
+      required:
+        - id
+        - title
+        - category
+        - date
+        - description
+        - administration
+        - status
+        - references
+      properties:
+        id:
+          type: integer
+        title:
+          type: string
+        category:
+          type: string
+          description: "executive_order | proclamation | policy | appointment | legislation | foreign_policy | immigration | judicial | deregulation | tariff | other"
+        date:
+          type: string
+        description:
+          type: string
+        administration:
+          type: string
+          description: "trump_2025 | biden | obama | bush | clinton | etc."
+        status:
+          type: string
+          description: "enacted | blocked | overturned | pending | reversed"
+        significance:
+          type: ["string", "null"]
+        references:
+          type: array
+          items:
+            $ref: "#/components/schemas/Reference"
+        supremeCourtChallenged:
+          type: ["boolean", "null"]
+
+    Reference:
+      type: object
+      required:
+        - title
+        - url
+        - source
+      properties:
+        title:
+          type: string
+        url:
+          type: string
+        source:
+          type: string
+
+    ActionStats:
+      type: object
+      required:
+        - byCategory
+        - byStatus
+        - totalActions
+        - byAdministration
+      properties:
+        totalActions:
+          type: integer
+        byCategory:
+          type: array
+          items:
+            $ref: "#/components/schemas/CategoryCount"
+        byStatus:
+          type: array
+          items:
+            $ref: "#/components/schemas/StatusCount"
+        byAdministration:
+          type: array
+          items:
+            $ref: "#/components/schemas/AdminCount"
+
+    CategoryCount:
+      type: object
+      required: [category, count]
+      properties:
+        category:
+          type: string
+        count:
+          type: integer
+
+    StatusCount:
+      type: object
+      required: [status, count]
+      properties:
+        status:
+          type: string
+        count:
+          type: integer
+
+    AdminCount:
+      type: object
+      required: [administration, count]
+      properties:
+        administration:
+          type: string
+        count:
+          type: integer
+
+    SupremeCourtCase:
+      type: object
+      required:
+        - id
+        - title
+        - year
+        - outcome
+        - description
+        - administration
+        - significance
+        - references
+        - category
+      properties:
+        id:
+          type: integer
+        title:
+          type: string
+        year:
+          type: integer
+        outcome:
+          type: string
+          description: "administration_won | administration_lost | pending | partial"
+        description:
+          type: string
+        administration:
+          type: string
+        significance:
+          type: string
+        category:
+          type: string
+          description: "immigration | executive_power | civil_rights | environment | voting | religion | other"
+        references:
+          type: array
+          items:
+            $ref: "#/components/schemas/Reference"
+
+    SupremeCourtAdminStat:
+      type: object
+      required:
+        - administration
+        - president
+        - party
+        - totalCases
+        - won
+        - lost
+        - pending
+        - winRate
+      properties:
+        administration:
+          type: string
+        president:
+          type: string
+        party:
+          type: string
+        totalCases:
+          type: integer
+        won:
+          type: integer
+        lost:
+          type: integer
+        pending:
+          type: integer
+        winRate:
+          type: number
+
+    Administration:
+      type: object
+      required:
+        - id
+        - slug
+        - president
+        - party
+        - startYear
+        - endYear
+        - executiveOrders
+        - supremeCourtCases
+        - supremeCourtWins
+        - legislationSigned
+        - description
+      properties:
+        id:
+          type: integer
+        slug:
+          type: string
+        president:
+          type: string
+        party:
+          type: string
+        startYear:
+          type: integer
+        endYear:
+          type: ["integer", "null"]
+        executiveOrders:
+          type: integer
+        supremeCourtCases:
+          type: integer
+        supremeCourtWins:
+          type: integer
+        legislationSigned:
+          type: integer
+        description:
+          type: string
+
+    AdministrationComparison:
+      type: object
+      required:
+        - administrations
+        - executiveOrdersTimeline
+        - supremeCourtTimeline
+      properties:
+        administrations:
+          type: array
+          items:
+            $ref: "#/components/schemas/Administration"
+        executiveOrdersTimeline:
+          type: array
+          items:
+            $ref: "#/components/schemas/TimelinePoint"
+        supremeCourtTimeline:
+          type: array
+          items:
+            $ref: "#/components/schemas/TimelinePoint"
+
+    TimelinePoint:
+      type: object
+      required:
+        - administration
+        - president
+        - value
+        - perYear
+      properties:
+        administration:
+          type: string
+        president:
+          type: string
+        value:
+          type: integer
+        perYear:
+          type: number
