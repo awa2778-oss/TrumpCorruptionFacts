@@ -27,9 +27,12 @@ import type {
   ListActionsParams,
   ListExecutiveOrdersParams,
   ListOverreachIncidentsParams,
+  ListRetributionActionsParams,
   ListSupremeCourtCasesParams,
   OverreachAdminStat,
   OverreachIncident,
+  RetributionAction,
+  RetributionStats,
   SupremeCourtAdminStat,
   SupremeCourtCase
 } from './api.schemas';
@@ -587,6 +590,167 @@ export function useGetSupremeCourtCase<TData = Awaited<ReturnType<typeof getSupr
  ):  UseQueryResult<TData, TError> & { queryKey: QueryKey } {
 
   const queryOptions = getGetSupremeCourtCaseQueryOptions(id,options)
+
+  const query = useQuery(queryOptions) as  UseQueryResult<TData, TError> & { queryKey: QueryKey };
+
+  return { ...query, queryKey: queryOptions.queryKey };
+}
+
+
+
+
+
+
+
+export const getListRetributionActionsUrl = (params?: ListRetributionActionsParams,) => {
+  const normalizedParams = new URLSearchParams();
+
+  Object.entries(params || {}).forEach(([key, value]) => {
+
+    if (value !== undefined) {
+      normalizedParams.append(key, value === null ? 'null' : value.toString())
+    }
+  });
+
+  const stringifiedParams = normalizedParams.toString();
+
+  return stringifiedParams.length > 0 ? `/api/retribution?${stringifiedParams}` : `/api/retribution`
+}
+
+/**
+ * @summary List targeted retribution actions
+ */
+export const listRetributionActions = async (params?: ListRetributionActionsParams, options?: RequestInit): Promise<RetributionAction[]> => {
+
+  return customFetch<RetributionAction[]>(getListRetributionActionsUrl(params),
+  {
+    ...options,
+    method: 'GET'
+
+
+  }
+);}
+
+
+
+
+
+export const getListRetributionActionsQueryKey = (params?: ListRetributionActionsParams,) => {
+    return [
+    `/api/retribution`, ...(params ? [params] : [])
+    ] as const;
+    }
+
+
+export const getListRetributionActionsQueryOptions = <TData = Awaited<ReturnType<typeof listRetributionActions>>, TError = ErrorType<unknown>>(params?: ListRetributionActionsParams, options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof listRetributionActions>>, TError, TData>, request?: SecondParameter<typeof customFetch>}
+) => {
+
+const {query: queryOptions, request: requestOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getListRetributionActionsQueryKey(params);
+
+
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof listRetributionActions>>> = ({ signal }) => listRetributionActions(params, { signal, ...requestOptions });
+
+
+
+
+
+   return  { queryKey, queryFn, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof listRetributionActions>>, TError, TData> & { queryKey: QueryKey }
+}
+
+export type ListRetributionActionsQueryResult = NonNullable<Awaited<ReturnType<typeof listRetributionActions>>>
+export type ListRetributionActionsQueryError = ErrorType<unknown>
+
+
+/**
+ * @summary List targeted retribution actions
+ */
+
+export function useListRetributionActions<TData = Awaited<ReturnType<typeof listRetributionActions>>, TError = ErrorType<unknown>>(
+ params?: ListRetributionActionsParams, options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof listRetributionActions>>, TError, TData>, request?: SecondParameter<typeof customFetch>}
+
+ ):  UseQueryResult<TData, TError> & { queryKey: QueryKey } {
+
+  const queryOptions = getListRetributionActionsQueryOptions(params,options)
+
+  const query = useQuery(queryOptions) as  UseQueryResult<TData, TError> & { queryKey: QueryKey };
+
+  return { ...query, queryKey: queryOptions.queryKey };
+}
+
+
+
+
+
+
+
+export const getGetRetributionStatsUrl = () => {
+
+
+
+
+  return `/api/retribution/stats`
+}
+
+/**
+ * @summary Get retribution action statistics
+ */
+export const getRetributionStats = async ( options?: RequestInit): Promise<RetributionStats> => {
+
+  return customFetch<RetributionStats>(getGetRetributionStatsUrl(),
+  {
+    ...options,
+    method: 'GET'
+
+
+  }
+);}
+
+
+
+
+
+export const getGetRetributionStatsQueryKey = () => {
+    return [
+    `/api/retribution/stats`
+    ] as const;
+    }
+
+
+export const getGetRetributionStatsQueryOptions = <TData = Awaited<ReturnType<typeof getRetributionStats>>, TError = ErrorType<unknown>>( options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof getRetributionStats>>, TError, TData>, request?: SecondParameter<typeof customFetch>}
+) => {
+
+const {query: queryOptions, request: requestOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getGetRetributionStatsQueryKey();
+
+
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof getRetributionStats>>> = ({ signal }) => getRetributionStats({ signal, ...requestOptions });
+
+
+
+
+
+   return  { queryKey, queryFn, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof getRetributionStats>>, TError, TData> & { queryKey: QueryKey }
+}
+
+export type GetRetributionStatsQueryResult = NonNullable<Awaited<ReturnType<typeof getRetributionStats>>>
+export type GetRetributionStatsQueryError = ErrorType<unknown>
+
+
+/**
+ * @summary Get retribution action statistics
+ */
+
+export function useGetRetributionStats<TData = Awaited<ReturnType<typeof getRetributionStats>>, TError = ErrorType<unknown>>(
+  options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof getRetributionStats>>, TError, TData>, request?: SecondParameter<typeof customFetch>}
+
+ ):  UseQueryResult<TData, TError> & { queryKey: QueryKey } {
+
+  const queryOptions = getGetRetributionStatsQueryOptions(options)
 
   const query = useQuery(queryOptions) as  UseQueryResult<TData, TError> & { queryKey: QueryKey };
 

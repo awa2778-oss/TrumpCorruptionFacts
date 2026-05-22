@@ -112,6 +112,40 @@ export interface AdministrationComparison {
   supremeCourtTimeline: TimelinePoint[];
 }
 
+export interface RetributionAction {
+  id: number;
+  title: string;
+  target: string;
+  /** individual | law_firm | university | media | federal_agency | nonprofit | foreign_entity | other */
+  targetType: string;
+  date: string;
+  description: string;
+  /** enacted | blocked | reversed | pending | partial */
+  outcome: string;
+  /** @nullable */
+  judicialResponse?: string | null;
+  significance: string;
+  references: Reference[];
+}
+
+export type RetributionStatsByTargetTypeItem = {
+  targetType: string;
+  count: number;
+};
+
+export type RetributionStatsByOutcomeItem = {
+  outcome: string;
+  count: number;
+};
+
+export interface RetributionStats {
+  total: number;
+  blocked: number;
+  judiciallyReversed: number;
+  byTargetType: RetributionStatsByTargetTypeItem[];
+  byOutcome: RetributionStatsByOutcomeItem[];
+}
+
 export interface JudicialChallengeSummary {
   id: number;
   title: string;
@@ -192,6 +226,11 @@ search?: string;
 
 export type ListSupremeCourtCasesParams = {
 administration?: string;
+outcome?: string;
+};
+
+export type ListRetributionActionsParams = {
+targetType?: string;
 outcome?: string;
 };
 

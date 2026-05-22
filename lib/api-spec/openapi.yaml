@@ -160,6 +160,43 @@ paths:
               schema:
                 $ref: "#/components/schemas/ErrorResponse"
 
+  /retribution:
+    get:
+      operationId: listRetributionActions
+      tags: [retribution]
+      summary: List targeted retribution actions
+      parameters:
+        - name: targetType
+          in: query
+          schema:
+            type: string
+        - name: outcome
+          in: query
+          schema:
+            type: string
+      responses:
+        "200":
+          description: List of targeted retribution actions
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/RetributionAction"
+
+  /retribution/stats:
+    get:
+      operationId: getRetributionStats
+      tags: [retribution]
+      summary: Get retribution action statistics
+      responses:
+        "200":
+          description: Retribution statistics
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/RetributionStats"
+
   /executive-orders:
     get:
       operationId: listExecutiveOrders
@@ -525,6 +562,80 @@ components:
           type: integer
         perYear:
           type: number
+
+    RetributionAction:
+      type: object
+      required:
+        - id
+        - title
+        - target
+        - targetType
+        - date
+        - description
+        - outcome
+        - significance
+        - references
+      properties:
+        id:
+          type: integer
+        title:
+          type: string
+        target:
+          type: string
+        targetType:
+          type: string
+          description: "individual | law_firm | university | media | federal_agency | nonprofit | foreign_entity | other"
+        date:
+          type: string
+        description:
+          type: string
+        outcome:
+          type: string
+          description: "enacted | blocked | reversed | pending | partial"
+        judicialResponse:
+          type: ["string", "null"]
+        significance:
+          type: string
+        references:
+          type: array
+          items:
+            $ref: "#/components/schemas/Reference"
+
+    RetributionStats:
+      type: object
+      required:
+        - total
+        - byTargetType
+        - byOutcome
+        - blocked
+        - judiciallyReversed
+      properties:
+        total:
+          type: integer
+        blocked:
+          type: integer
+        judiciallyReversed:
+          type: integer
+        byTargetType:
+          type: array
+          items:
+            type: object
+            required: [targetType, count]
+            properties:
+              targetType:
+                type: string
+              count:
+                type: integer
+        byOutcome:
+          type: array
+          items:
+            type: object
+            required: [outcome, count]
+            properties:
+              outcome:
+                type: string
+              count:
+                type: integer
 
     ExecutiveOrderWithStatus:
       type: object

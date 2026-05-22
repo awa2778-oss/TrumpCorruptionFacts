@@ -14,6 +14,7 @@ import SupremeCourtComparePage from "@/pages/supreme-court-compare";
 import ComparePage from "@/pages/compare";
 import OverreachPage from "@/pages/overreach";
 import ExecutiveOrdersPage from "@/pages/executive-orders";
+import RetributionPage from "@/pages/retribution";
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -34,6 +35,7 @@ function Router() {
       <Route path="/compare" component={ComparePage} />
       <Route path="/overreach" component={OverreachPage} />
       <Route path="/executive-orders" component={ExecutiveOrdersPage} />
+      <Route path="/retribution" component={RetributionPage} />
       <Route component={NotFound} />
     </Switch>
   );

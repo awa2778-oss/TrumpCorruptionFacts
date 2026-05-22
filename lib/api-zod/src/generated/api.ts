@@ -156,6 +156,51 @@ export const GetSupremeCourtCaseResponse = zod.object({
 
 
 /**
+ * @summary List targeted retribution actions
+ */
+export const ListRetributionActionsQueryParams = zod.object({
+  "targetType": zod.coerce.string().optional(),
+  "outcome": zod.coerce.string().optional()
+})
+
+export const ListRetributionActionsResponseItem = zod.object({
+  "id": zod.number(),
+  "title": zod.string(),
+  "target": zod.string(),
+  "targetType": zod.string().describe('individual | law_firm | university | media | federal_agency | nonprofit | foreign_entity | other'),
+  "date": zod.string(),
+  "description": zod.string(),
+  "outcome": zod.string().describe('enacted | blocked | reversed | pending | partial'),
+  "judicialResponse": zod.string().nullish(),
+  "significance": zod.string(),
+  "references": zod.array(zod.object({
+  "title": zod.string(),
+  "url": zod.string(),
+  "source": zod.string()
+}))
+})
+export const ListRetributionActionsResponse = zod.array(ListRetributionActionsResponseItem)
+
+
+/**
+ * @summary Get retribution action statistics
+ */
+export const GetRetributionStatsResponse = zod.object({
+  "total": zod.number(),
+  "blocked": zod.number(),
+  "judiciallyReversed": zod.number(),
+  "byTargetType": zod.array(zod.object({
+  "targetType": zod.string(),
+  "count": zod.number()
+})),
+  "byOutcome": zod.array(zod.object({
+  "outcome": zod.string(),
+  "count": zod.number()
+}))
+})
+
+
+/**
  * @summary List executive orders with judicial status
  */
 export const ListExecutiveOrdersQueryParams = zod.object({

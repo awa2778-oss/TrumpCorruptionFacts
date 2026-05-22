@@ -5,6 +5,7 @@ import supremeCourtRouter from "./supreme-court";
 import administrationsRouter from "./administrations";
 import overreachRouter from "./overreach";
 import executiveOrdersRouter from "./executive-orders";
+import retributionRouter from "./retribution";
 
 const router: IRouter = Router();
 
@@ -14,5 +15,6 @@ router.use(supremeCourtRouter);
 router.use(administrationsRouter);
 router.use(overreachRouter);
 router.use(executiveOrdersRouter);
+router.use(retributionRouter);
 
 export default router;
