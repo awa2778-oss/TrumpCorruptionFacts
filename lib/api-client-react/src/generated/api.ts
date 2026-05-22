@@ -21,8 +21,11 @@ import type {
   AdministrationAction,
   AdministrationComparison,
   ErrorResponse,
+  ExecutiveOrderComparison,
+  ExecutiveOrderWithStatus,
   HealthStatus,
   ListActionsParams,
+  ListExecutiveOrdersParams,
   ListOverreachIncidentsParams,
   ListSupremeCourtCasesParams,
   OverreachAdminStat,
@@ -584,6 +587,167 @@ export function useGetSupremeCourtCase<TData = Awaited<ReturnType<typeof getSupr
  ):  UseQueryResult<TData, TError> & { queryKey: QueryKey } {
 
   const queryOptions = getGetSupremeCourtCaseQueryOptions(id,options)
+
+  const query = useQuery(queryOptions) as  UseQueryResult<TData, TError> & { queryKey: QueryKey };
+
+  return { ...query, queryKey: queryOptions.queryKey };
+}
+
+
+
+
+
+
+
+export const getListExecutiveOrdersUrl = (params?: ListExecutiveOrdersParams,) => {
+  const normalizedParams = new URLSearchParams();
+
+  Object.entries(params || {}).forEach(([key, value]) => {
+
+    if (value !== undefined) {
+      normalizedParams.append(key, value === null ? 'null' : value.toString())
+    }
+  });
+
+  const stringifiedParams = normalizedParams.toString();
+
+  return stringifiedParams.length > 0 ? `/api/executive-orders?${stringifiedParams}` : `/api/executive-orders`
+}
+
+/**
+ * @summary List executive orders with judicial status
+ */
+export const listExecutiveOrders = async (params?: ListExecutiveOrdersParams, options?: RequestInit): Promise<ExecutiveOrderWithStatus[]> => {
+
+  return customFetch<ExecutiveOrderWithStatus[]>(getListExecutiveOrdersUrl(params),
+  {
+    ...options,
+    method: 'GET'
+
+
+  }
+);}
+
+
+
+
+
+export const getListExecutiveOrdersQueryKey = (params?: ListExecutiveOrdersParams,) => {
+    return [
+    `/api/executive-orders`, ...(params ? [params] : [])
+    ] as const;
+    }
+
+
+export const getListExecutiveOrdersQueryOptions = <TData = Awaited<ReturnType<typeof listExecutiveOrders>>, TError = ErrorType<unknown>>(params?: ListExecutiveOrdersParams, options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof listExecutiveOrders>>, TError, TData>, request?: SecondParameter<typeof customFetch>}
+) => {
+
+const {query: queryOptions, request: requestOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getListExecutiveOrdersQueryKey(params);
+
+
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof listExecutiveOrders>>> = ({ signal }) => listExecutiveOrders(params, { signal, ...requestOptions });
+
+
+
+
+
+   return  { queryKey, queryFn, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof listExecutiveOrders>>, TError, TData> & { queryKey: QueryKey }
+}
+
+export type ListExecutiveOrdersQueryResult = NonNullable<Awaited<ReturnType<typeof listExecutiveOrders>>>
+export type ListExecutiveOrdersQueryError = ErrorType<unknown>
+
+
+/**
+ * @summary List executive orders with judicial status
+ */
+
+export function useListExecutiveOrders<TData = Awaited<ReturnType<typeof listExecutiveOrders>>, TError = ErrorType<unknown>>(
+ params?: ListExecutiveOrdersParams, options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof listExecutiveOrders>>, TError, TData>, request?: SecondParameter<typeof customFetch>}
+
+ ):  UseQueryResult<TData, TError> & { queryKey: QueryKey } {
+
+  const queryOptions = getListExecutiveOrdersQueryOptions(params,options)
+
+  const query = useQuery(queryOptions) as  UseQueryResult<TData, TError> & { queryKey: QueryKey };
+
+  return { ...query, queryKey: queryOptions.queryKey };
+}
+
+
+
+
+
+
+
+export const getCompareExecutiveOrdersUrl = () => {
+
+
+
+
+  return `/api/executive-orders/compare`
+}
+
+/**
+ * @summary Compare executive order rates and judicial challenges across administrations
+ */
+export const compareExecutiveOrders = async ( options?: RequestInit): Promise<ExecutiveOrderComparison[]> => {
+
+  return customFetch<ExecutiveOrderComparison[]>(getCompareExecutiveOrdersUrl(),
+  {
+    ...options,
+    method: 'GET'
+
+
+  }
+);}
+
+
+
+
+
+export const getCompareExecutiveOrdersQueryKey = () => {
+    return [
+    `/api/executive-orders/compare`
+    ] as const;
+    }
+
+
+export const getCompareExecutiveOrdersQueryOptions = <TData = Awaited<ReturnType<typeof compareExecutiveOrders>>, TError = ErrorType<unknown>>( options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof compareExecutiveOrders>>, TError, TData>, request?: SecondParameter<typeof customFetch>}
+) => {
+
+const {query: queryOptions, request: requestOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getCompareExecutiveOrdersQueryKey();
+
+
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof compareExecutiveOrders>>> = ({ signal }) => compareExecutiveOrders({ signal, ...requestOptions });
+
+
+
+
+
+   return  { queryKey, queryFn, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof compareExecutiveOrders>>, TError, TData> & { queryKey: QueryKey }
+}
+
+export type CompareExecutiveOrdersQueryResult = NonNullable<Awaited<ReturnType<typeof compareExecutiveOrders>>>
+export type CompareExecutiveOrdersQueryError = ErrorType<unknown>
+
+
+/**
+ * @summary Compare executive order rates and judicial challenges across administrations
+ */
+
+export function useCompareExecutiveOrders<TData = Awaited<ReturnType<typeof compareExecutiveOrders>>, TError = ErrorType<unknown>>(
+  options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof compareExecutiveOrders>>, TError, TData>, request?: SecondParameter<typeof customFetch>}
+
+ ):  UseQueryResult<TData, TError> & { queryKey: QueryKey } {
+
+  const queryOptions = getCompareExecutiveOrdersQueryOptions(options)
 
   const query = useQuery(queryOptions) as  UseQueryResult<TData, TError> & { queryKey: QueryKey };
 

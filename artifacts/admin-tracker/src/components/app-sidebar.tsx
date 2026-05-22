@@ -10,12 +10,13 @@ import {
   SidebarMenuButton,
   SidebarMenuItem,
 } from "@/components/ui/sidebar";
-import { Home, List, Scale, BarChart, Gavel, AlertTriangle } from "lucide-react";
+import { Home, List, Scale, BarChart, Gavel, AlertTriangle, FileText } from "lucide-react";
 import { ThemeToggle } from "./theme-toggle";
 
 const navItems = [
   { title: "Dashboard", url: "/", icon: Home },
   { title: "All Actions", url: "/actions", icon: List },
+  { title: "Executive Orders", url: "/executive-orders", icon: FileText },
   { title: "Executive Overreach", url: "/overreach", icon: AlertTriangle },
   { title: "Supreme Court Cases", url: "/supreme-court", icon: Scale },
   { title: "SCOTUS Compare", url: "/supreme-court/compare", icon: Gavel },

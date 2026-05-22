@@ -156,6 +156,60 @@ export const GetSupremeCourtCaseResponse = zod.object({
 
 
 /**
+ * @summary List executive orders with judicial status
+ */
+export const ListExecutiveOrdersQueryParams = zod.object({
+  "administration": zod.coerce.string().optional(),
+  "judicialStatus": zod.coerce.string().optional()
+})
+
+export const ListExecutiveOrdersResponseItem = zod.object({
+  "id": zod.number(),
+  "eoNumber": zod.string(),
+  "title": zod.string(),
+  "date": zod.string(),
+  "description": zod.string(),
+  "administration": zod.string(),
+  "status": zod.string(),
+  "significance": zod.string().nullish(),
+  "references": zod.array(zod.object({
+  "title": zod.string(),
+  "url": zod.string(),
+  "source": zod.string()
+})),
+  "judicialStatus": zod.string().describe('not_challenged | challenged_blocked | challenged_upheld | challenged_pending | challenged_partial'),
+  "judicialChallenges": zod.array(zod.object({
+  "id": zod.number(),
+  "title": zod.string(),
+  "outcome": zod.string(),
+  "type": zod.string(),
+  "significance": zod.string()
+}))
+})
+export const ListExecutiveOrdersResponse = zod.array(ListExecutiveOrdersResponseItem)
+
+
+/**
+ * @summary Compare executive order rates and judicial challenges across administrations
+ */
+export const CompareExecutiveOrdersResponseItem = zod.object({
+  "administration": zod.string(),
+  "president": zod.string(),
+  "party": zod.string(),
+  "startYear": zod.number(),
+  "endYear": zod.number().nullable(),
+  "totalEOs": zod.number(),
+  "eosPerYear": zod.number(),
+  "challengedEOs": zod.number(),
+  "blockedEOs": zod.number(),
+  "upheldEOs": zod.number(),
+  "pendingEOs": zod.number(),
+  "challengeRate": zod.number()
+})
+export const CompareExecutiveOrdersResponse = zod.array(CompareExecutiveOrdersResponseItem)
+
+
+/**
  * @summary List executive overreach incidents
  */
 export const ListOverreachIncidentsQueryParams = zod.object({

@@ -160,6 +160,45 @@ paths:
               schema:
                 $ref: "#/components/schemas/ErrorResponse"
 
+  /executive-orders:
+    get:
+      operationId: listExecutiveOrders
+      tags: [executive-orders]
+      summary: List executive orders with judicial status
+      parameters:
+        - name: administration
+          in: query
+          schema:
+            type: string
+        - name: judicialStatus
+          in: query
+          schema:
+            type: string
+      responses:
+        "200":
+          description: List of executive orders enriched with judicial challenge data
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/ExecutiveOrderWithStatus"
+
+  /executive-orders/compare:
+    get:
+      operationId: compareExecutiveOrders
+      tags: [executive-orders]
+      summary: Compare executive order rates and judicial challenges across administrations
+      responses:
+        "200":
+          description: Per-administration EO comparison data
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/ExecutiveOrderComparison"
+
   /overreach:
     get:
       operationId: listOverreachIncidents
@@ -485,6 +524,109 @@ components:
         value:
           type: integer
         perYear:
+          type: number
+
+    ExecutiveOrderWithStatus:
+      type: object
+      required:
+        - id
+        - eoNumber
+        - title
+        - date
+        - description
+        - administration
+        - status
+        - references
+        - judicialStatus
+        - judicialChallenges
+      properties:
+        id:
+          type: integer
+        eoNumber:
+          type: string
+        title:
+          type: string
+        date:
+          type: string
+        description:
+          type: string
+        administration:
+          type: string
+        status:
+          type: string
+        significance:
+          type: ["string", "null"]
+        references:
+          type: array
+          items:
+            $ref: "#/components/schemas/Reference"
+        judicialStatus:
+          type: string
+          description: "not_challenged | challenged_blocked | challenged_upheld | challenged_pending | challenged_partial"
+        judicialChallenges:
+          type: array
+          items:
+            $ref: "#/components/schemas/JudicialChallengeSummary"
+
+    JudicialChallengeSummary:
+      type: object
+      required:
+        - id
+        - title
+        - outcome
+        - type
+        - significance
+      properties:
+        id:
+          type: integer
+        title:
+          type: string
+        outcome:
+          type: string
+        type:
+          type: string
+        significance:
+          type: string
+
+    ExecutiveOrderComparison:
+      type: object
+      required:
+        - administration
+        - president
+        - party
+        - startYear
+        - endYear
+        - totalEOs
+        - eosPerYear
+        - challengedEOs
+        - blockedEOs
+        - upheldEOs
+        - pendingEOs
+        - challengeRate
+      properties:
+        administration:
+          type: string
+        president:
+          type: string
+        party:
+          type: string
+        startYear:
+          type: integer
+        endYear:
+          type: ["integer", "null"]
+        totalEOs:
+          type: integer
+        eosPerYear:
+          type: number
+        challengedEOs:
+          type: integer
+        blockedEOs:
+          type: integer
+        upheldEOs:
+          type: integer
+        pendingEOs:
+          type: integer
+        challengeRate:
           type: number
 
     OverreachIncident:

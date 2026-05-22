@@ -112,6 +112,46 @@ export interface AdministrationComparison {
   supremeCourtTimeline: TimelinePoint[];
 }
 
+export interface JudicialChallengeSummary {
+  id: number;
+  title: string;
+  outcome: string;
+  type: string;
+  significance: string;
+}
+
+export interface ExecutiveOrderWithStatus {
+  id: number;
+  eoNumber: string;
+  title: string;
+  date: string;
+  description: string;
+  administration: string;
+  status: string;
+  /** @nullable */
+  significance?: string | null;
+  references: Reference[];
+  /** not_challenged | challenged_blocked | challenged_upheld | challenged_pending | challenged_partial */
+  judicialStatus: string;
+  judicialChallenges: JudicialChallengeSummary[];
+}
+
+export interface ExecutiveOrderComparison {
+  administration: string;
+  president: string;
+  party: string;
+  startYear: number;
+  /** @nullable */
+  endYear: number | null;
+  totalEOs: number;
+  eosPerYear: number;
+  challengedEOs: number;
+  blockedEOs: number;
+  upheldEOs: number;
+  pendingEOs: number;
+  challengeRate: number;
+}
+
 export interface OverreachIncident {
   id: number;
   title: string;
@@ -153,6 +193,11 @@ search?: string;
 export type ListSupremeCourtCasesParams = {
 administration?: string;
 outcome?: string;
+};
+
+export type ListExecutiveOrdersParams = {
+administration?: string;
+judicialStatus?: string;
 };
 
 export type ListOverreachIncidentsParams = {
