@@ -15,6 +15,7 @@ import ComparePage from "@/pages/compare";
 import OverreachPage from "@/pages/overreach";
 import ExecutiveOrdersPage from "@/pages/executive-orders";
 import RetributionPage from "@/pages/retribution";
+import BigBillPage from "@/pages/big-bill";
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -36,6 +37,7 @@ function Router() {
       <Route path="/overreach" component={OverreachPage} />
       <Route path="/executive-orders" component={ExecutiveOrdersPage} />
       <Route path="/retribution" component={RetributionPage} />
+      <Route path="/big-bill" component={BigBillPage} />
       <Route component={NotFound} />
     </Switch>
   );
