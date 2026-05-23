@@ -443,6 +443,147 @@ export default function RetributionPage() {
         )}
       </section>
 
+      {/* ═══════════════════════════════════════════════════════════
+          INVESTIGATORS INVESTIGATED — spotlight section
+      ══════════════════════════════════════════════════════════════ */}
+      <section className="space-y-6">
+        <div className="border-b-8 pb-4" style={{ borderColor: "#7c3aed" }}>
+          <div className="flex items-start gap-4">
+            <Search className="w-10 h-10 shrink-0 mt-1" style={{ color: "#7c3aed" }} strokeWidth={3} />
+            <div>
+              <h2 className="text-4xl md:text-5xl uppercase tracking-wider drop-shadow-[3px_3px_0px_rgba(124,58,237,1)]">
+                The Investigators Investigated
+              </h2>
+              <p className="text-base font-bold uppercase tracking-widest text-muted-foreground mt-1">
+                Counter-investigations targeting the people who prosecuted or investigated Trump
+              </p>
+            </div>
+          </div>
+        </div>
+
+        <div className="border-4 p-4 space-y-2" style={{ borderColor: "#7c3aed", background: "#7c3aed18" }}>
+          <p className="text-sm font-bold uppercase tracking-wider leading-relaxed">
+            <span className="font-black" style={{ color: "#7c3aed" }}>Constitutional concern: </span>
+            The pattern below — federal DOJ opening investigations into state-level prosecutors
+            who secured convictions or judgments against Trump — is what legal scholars call
+            "retroactive retribution." In each case, the federal action came within weeks or months
+            of a major legal ruling against the president. No prior administration has used the DOJ
+            in this manner against sitting state officials.
+          </p>
+        </div>
+
+        {/* Spotlight cards grid */}
+        {items && (() => {
+          const investigators = items.filter((i) => (i as any).connectionType === "investigator");
+          return (
+            <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-5">
+              {investigators.map((item) => {
+                const refs = Array.isArray((item as any).references) ? (item as any).references as Array<{ label: string; url: string }> : [];
+                const connText = (item as any).trumpConnection as string | undefined;
+                const relYears = (item as any).relationshipYears as number | undefined;
+                const outCfg = OUTCOME_CONFIG[item.outcome as string] ?? { label: item.outcome, bg: "bg-secondary" };
+                return (
+                  <Card
+                    key={item.id}
+                    data-testid={`investigator-card-${item.id}`}
+                    className="border-4 rounded-none flex flex-col"
+                    style={{ borderColor: "#7c3aed", boxShadow: "6px 6px 0px 0px #7c3aed" }}
+                  >
+                    {/* Card header */}
+                    <CardHeader className="border-b-4 py-3 px-4 bg-purple-700 text-white" style={{ borderColor: "#5b21b6" }}>
+                      <div className="flex items-start justify-between gap-2">
+                        <div className="flex-1 min-w-0">
+                          <p className="text-xs font-black uppercase tracking-widest opacity-80 mb-0.5">{item.date}</p>
+                          <CardTitle className="text-sm uppercase tracking-wide leading-snug">{item.title}</CardTitle>
+                        </div>
+                        <span className={`shrink-0 px-2 py-1 text-xs font-bold uppercase border-2 border-white/40 ${outCfg.bg}`}>
+                          {outCfg.label}
+                        </span>
+                      </div>
+                    </CardHeader>
+
+                    <CardContent className="p-4 flex-1 flex flex-col gap-3">
+                      {/* Target */}
+                      <div className="flex items-center gap-2">
+                        <Search className="w-4 h-4 shrink-0" style={{ color: "#7c3aed" }} />
+                        <span className="text-sm font-black uppercase tracking-wide" style={{ color: "#7c3aed" }}>
+                          {item.target}
+                        </span>
+                        {relYears !== undefined && relYears !== null && (
+                          <span className="ml-auto text-xs font-bold uppercase border-2 px-1.5 py-0.5"
+                            style={{ borderColor: "#7c3aed", color: "#7c3aed" }}>
+                            {relYears} yr{relYears !== 1 ? "s" : ""} known
+                          </span>
+                        )}
+                      </div>
+
+                      {/* What they did to Trump */}
+                      {connText && (
+                        <div className="border-l-4 pl-3 py-1" style={{ borderColor: "#7c3aed", background: "#7c3aed10" }}>
+                          <p className="text-xs font-black uppercase tracking-widest mb-1" style={{ color: "#7c3aed" }}>
+                            What they did:
+                          </p>
+                          <p className="text-xs font-semibold leading-relaxed">{connText}</p>
+                        </div>
+                      )}
+
+                      {/* What happened to them */}
+                      <div>
+                        <p className="text-xs font-black uppercase tracking-widest mb-1 text-muted-foreground">
+                          What happened to them:
+                        </p>
+                        <p className="text-xs font-semibold leading-relaxed">{item.description}</p>
+                      </div>
+
+                      {/* Judicial response if any */}
+                      {item.judicialResponse && (
+                        <div className="border-l-4 border-destructive pl-3 bg-destructive/5 py-1">
+                          <p className="text-xs font-black uppercase tracking-widest text-destructive mb-1">Courts:</p>
+                          <p className="text-xs font-semibold leading-relaxed">{item.judicialResponse}</p>
+                        </div>
+                      )}
+
+                      {/* References */}
+                      {refs.length > 0 && (
+                        <div className="flex flex-wrap gap-1.5 pt-1 mt-auto">
+                          {refs.map((ref, idx) => (
+                            <a
+                              key={idx}
+                              href={ref.url}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="inline-flex items-center gap-1 px-2 py-0.5 text-xs font-bold uppercase border-2 bg-background hover:bg-purple-50 transition-colors"
+                              style={{ borderColor: "#7c3aed", color: "#7c3aed" }}
+                            >
+                              <ExternalLink className="w-3 h-3" />
+                              {ref.label}
+                            </a>
+                          ))}
+                        </div>
+                      )}
+                    </CardContent>
+                  </Card>
+                );
+              })}
+            </div>
+          );
+        })()}
+
+        {/* Pattern callout */}
+        <div className="border-4 border-border bg-muted/20 p-5 grid grid-cols-1 md:grid-cols-3 gap-4">
+          {[
+            { label: "Pattern", text: "Every federal counter-investigation opened after a major legal loss for Trump — not before." },
+            { label: "Timing", text: "Fani Willis: 18 months after indictment. Letitia James: days after $454M appeal affirmed. Comey: same week he posted." },
+            { label: "Precedent", text: "No prior U.S. administration has used the DOJ to simultaneously investigate multiple sitting state-level prosecutors." },
+          ].map((p) => (
+            <div key={p.label} className="space-y-1">
+              <p className="text-xs font-black uppercase tracking-widest" style={{ color: "#7c3aed" }}>{p.label}</p>
+              <p className="text-xs font-semibold leading-relaxed text-muted-foreground">{p.text}</p>
+            </div>
+          ))}
+        </div>
+      </section>
+
       {/* Target type quick filters */}
       <div className="flex flex-wrap gap-2">
         {Object.entries(TARGET_TYPE_CONFIG).map(([key, cfg]) => (
