@@ -229,7 +229,10 @@ export const ListExecutiveOrdersResponseItem = zod.object({
   "outcome": zod.string(),
   "type": zod.string(),
   "significance": zod.string()
-}))
+})),
+  "factualityRating": zod.string().nullish().describe('high | mixed | low | unrated'),
+  "factualitySource": zod.string().nullish(),
+  "factualityNotes": zod.string().nullish()
 })
 export const ListExecutiveOrdersResponse = zod.array(ListExecutiveOrdersResponseItem)
 

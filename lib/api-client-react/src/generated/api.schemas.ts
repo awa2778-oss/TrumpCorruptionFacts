@@ -168,6 +168,15 @@ export interface ExecutiveOrderWithStatus {
   /** not_challenged | challenged_blocked | challenged_upheld | challenged_pending | challenged_partial */
   judicialStatus: string;
   judicialChallenges: JudicialChallengeSummary[];
+  /**
+     * high | mixed | low | unrated
+     * @nullable
+     */
+  factualityRating?: string | null;
+  /** @nullable */
+  factualitySource?: string | null;
+  /** @nullable */
+  factualityNotes?: string | null;
 }
 
 export interface ExecutiveOrderComparison {

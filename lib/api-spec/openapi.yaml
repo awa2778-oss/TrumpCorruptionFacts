@@ -678,6 +678,13 @@ components:
           type: array
           items:
             $ref: "#/components/schemas/JudicialChallengeSummary"
+        factualityRating:
+          type: ["string", "null"]
+          description: "high | mixed | low | unrated"
+        factualitySource:
+          type: ["string", "null"]
+        factualityNotes:
+          type: ["string", "null"]
 
     JudicialChallengeSummary:
       type: object

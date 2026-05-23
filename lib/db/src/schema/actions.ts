@@ -13,6 +13,9 @@ export const actionsTable = pgTable("administration_actions", {
   significance: text("significance"),
   references: jsonb("references").notNull().default([]),
   supremeCourtChallenged: boolean("supreme_court_challenged").default(false),
+  factualityRating: text("factuality_rating"),
+  factualitySource: text("factuality_source"),
+  factualityNotes: text("factuality_notes"),
 });
 
 export const insertActionSchema = createInsertSchema(actionsTable).omit({ id: true });

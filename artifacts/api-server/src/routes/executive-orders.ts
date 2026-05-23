@@ -137,6 +137,9 @@ router.get("/executive-orders", async (req, res) => {
         significance: eo.significance ?? null,
         references: eo.references,
         judicialStatus: judicialSt,
+        factualityRating: eo.factualityRating ?? null,
+        factualitySource: eo.factualitySource ?? null,
+        factualityNotes: eo.factualityNotes ?? null,
         judicialChallenges: uniqueChallenges.map((c) => ({
           id: c.id,
           title: c.title,
