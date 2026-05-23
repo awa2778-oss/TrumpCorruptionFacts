@@ -17,6 +17,8 @@ import ExecutiveOrdersPage from "@/pages/executive-orders";
 import RetributionPage from "@/pages/retribution";
 import BigBillPage from "@/pages/big-bill";
 import EnrichmentPage from "@/pages/enrichment";
+import ExportPage from "@/pages/export";
+import AnalyticsPage from "@/pages/analytics";
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -40,6 +42,8 @@ function Router() {
       <Route path="/retribution" component={RetributionPage} />
       <Route path="/big-bill" component={BigBillPage} />
       <Route path="/enrichment" component={EnrichmentPage} />
+      <Route path="/export" component={ExportPage} />
+      <Route path="/analytics" component={AnalyticsPage} />
       <Route component={NotFound} />
     </Switch>
   );
