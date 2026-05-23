@@ -30,5 +30,10 @@ export interface RetributionAction {
      * @nullable
      */
   connectionType?: string | null;
+  /**
+     * Approximate number of years the target had a significant relationship or interaction with Trump before the retaliatory action
+     * @nullable
+     */
+  relationshipYears?: number | null;
   references: Reference[];
 }

@@ -54,6 +54,7 @@ router.get("/retribution", async (req, res) => {
       ...r,
       trumpConnection: r.trumpConnection ?? null,
       connectionType: r.connectionType ?? null,
+      relationshipYears: r.relationshipYears ?? null,
     }));
     res.json(out);
   } catch (err) {

@@ -602,6 +602,9 @@ components:
         connectionType:
           type: ["string", "null"]
           description: "appointed | political_opponent | legal_adversary | investigator | critic | institutional"
+        relationshipYears:
+          type: ["integer", "null"]
+          description: "Approximate number of years the target had a significant relationship or interaction with Trump before the retaliatory action"
         references:
           type: array
           items:

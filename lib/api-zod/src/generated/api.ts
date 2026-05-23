@@ -175,6 +175,7 @@ export const ListRetributionActionsResponseItem = zod.object({
   "significance": zod.string(),
   "trumpConnection": zod.string().nullish().describe('Description of the prior relationship between Trump and the target before the retaliatory action'),
   "connectionType": zod.string().nullish().describe('appointed | political_opponent | legal_adversary | investigator | critic | institutional'),
+  "relationshipYears": zod.number().nullish().describe('Approximate number of years the target had a significant relationship or interaction with Trump before the retaliatory action'),
   "references": zod.array(zod.object({
   "title": zod.string(),
   "url": zod.string(),

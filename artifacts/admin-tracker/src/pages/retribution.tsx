@@ -15,6 +15,11 @@ import {
   ResponsiveContainer,
   CartesianGrid,
   Cell,
+  Legend,
+  ComposedChart,
+  Scatter,
+  LabelList,
+  ReferenceLine,
 } from "recharts";
 import {
   ExternalLink,
@@ -233,16 +238,28 @@ export default function RetributionPage() {
     ? items?.filter((i) => (i as any).connectionType === filterConn)
     : items;
 
-  // Count by connection type from full dataset
+  // Count + avg relationship years by connection type
   const connCounts = items
     ? Object.entries(
-        items.reduce<Record<string, number>>((acc, i) => {
+        items.reduce<Record<string, { count: number; totalYears: number; items: number[] }>>((acc, i) => {
           const k = ((i as any).connectionType as string) ?? "institutional";
-          acc[k] = (acc[k] ?? 0) + 1;
+          const y = ((i as any).relationshipYears as number) ?? 0;
+          if (!acc[k]) acc[k] = { count: 0, totalYears: 0, items: [] };
+          acc[k].count++;
+          acc[k].totalYears += y;
+          acc[k].items.push(y);
           return acc;
         }, {})
       )
-        .map(([key, count]) => ({ key, count, label: CONNECTION_CONFIG[key]?.label ?? key, fill: CONNECTION_CONFIG[key]?.hex ?? "#374151" }))
+        .map(([key, d]) => ({
+          key,
+          count: d.count,
+          avgYears: Math.round((d.totalYears / d.count) * 10) / 10,
+          minYears: Math.min(...d.items),
+          maxYears: Math.max(...d.items),
+          label: CONNECTION_CONFIG[key]?.label ?? key,
+          fill: CONNECTION_CONFIG[key]?.hex ?? "#374151",
+        }))
         .sort((a, b) => b.count - a.count)
     : [];
 
@@ -302,17 +319,25 @@ export default function RetributionPage() {
 
         {!statsLoading && items && (
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-            {/* Connection type bar chart */}
+            {/* Connection type chart — count + avg relationship years */}
             <Card className="border-4 border-border rounded-none shadow-[8px_8px_0px_0px_hsl(var(--destructive))] lg:col-span-2">
               <CardHeader className="border-b-4 border-border bg-destructive text-destructive-foreground">
-                <CardTitle className="text-xl uppercase tracking-wider">Actions by Connection Type</CardTitle>
+                <CardTitle className="text-xl uppercase tracking-wider flex flex-wrap items-center gap-4">
+                  <span>Enemies by Type — Actions vs. Years Known to Trump</span>
+                  <div className="flex items-center gap-4 text-xs font-bold ml-auto">
+                    <span className="flex items-center gap-1"><span className="inline-block w-3 h-3 border-2 border-white opacity-60" style={{ background: "#6b7280" }} /> # Actions</span>
+                    <span className="flex items-center gap-1"><span className="inline-block w-3 h-3 border-2 border-white" style={{ background: "#FFD700" }} /> Avg Yrs Known</span>
+                  </div>
+                </CardTitle>
               </CardHeader>
-              <CardContent className="p-4 h-[260px]">
+              <CardContent className="p-4 h-[340px]">
                 <ResponsiveContainer width="100%" height="100%">
                   <BarChart
                     layout="vertical"
                     data={connCounts}
-                    margin={{ top: 5, right: 60, left: 10, bottom: 5 }}
+                    margin={{ top: 5, right: 80, left: 10, bottom: 5 }}
+                    barCategoryGap="20%"
+                    barGap={3}
                     onClick={(d) => {
                       if (d?.activePayload?.[0]?.payload?.key) {
                         const k = d.activePayload[0].payload.key as string;
@@ -321,36 +346,68 @@ export default function RetributionPage() {
                     }}
                   >
                     <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" horizontal={false} />
-                    <XAxis type="number" allowDecimals={false} tick={{ fontFamily: "var(--font-sans)", fontWeight: "bold", fill: "hsl(var(--foreground))" }} />
+                    <XAxis
+                      type="number"
+                      allowDecimals={false}
+                      domain={[0, Math.max(...connCounts.map(c => Math.max(c.count, c.avgYears))) + 2]}
+                      tick={{ fontFamily: "var(--font-sans)", fontWeight: "bold", fill: "hsl(var(--foreground))", fontSize: 11 }}
+                    />
                     <YAxis
                       type="category"
                       dataKey="label"
-                      width={160}
+                      width={165}
                       tick={{ fontFamily: "var(--font-sans)", fontWeight: 900, fontSize: 11, fill: "hsl(var(--foreground))" }}
                     />
                     <Tooltip
                       cursor={{ fill: "hsl(var(--muted))" }}
-                      contentStyle={{ border: "4px solid hsl(var(--border))", borderRadius: 0, fontWeight: "bold", textTransform: "uppercase" }}
-                      formatter={(v) => [v, "Actions"]}
+                      contentStyle={{ border: "4px solid hsl(var(--border))", borderRadius: 0, fontWeight: "bold", textTransform: "uppercase", fontSize: 12 }}
+                      content={({ active, payload, label }) => {
+                        if (!active || !payload?.length) return null;
+                        const d = connCounts.find(c => c.label === label);
+                        if (!d) return null;
+                        return (
+                          <div className="bg-background border-4 border-border p-3 space-y-1 text-xs font-bold uppercase">
+                            <p className="text-sm font-black">{label}</p>
+                            <p>Actions: <span className="text-destructive">{d.count}</span></p>
+                            <p>Avg years known: <span style={{ color: "#FFD700", textShadow: "0 0 4px #000" }} className="font-black">{d.avgYears} yrs</span></p>
+                            <p className="text-muted-foreground">Range: {d.minYears}–{d.maxYears} yrs</p>
+                          </div>
+                        );
+                      }}
                     />
-                    <Bar
-                      dataKey="count"
-                      stroke="hsl(var(--border))"
-                      strokeWidth={2}
-                      label={{ position: "right", fontWeight: 900, fontSize: 14, fontFamily: "var(--font-sans)", fill: "hsl(var(--foreground))" }}
-                    >
+                    {/* Count bar — connection type color */}
+                    <Bar dataKey="count" name="# Actions" stroke="hsl(var(--border))" strokeWidth={2}>
                       {connCounts.map((entry, idx) => (
                         <Cell
-                          key={idx}
-                          fill={filterConn === entry.key ? entry.fill : `${entry.fill}99`}
+                          key={`count-${idx}`}
+                          fill={filterConn === entry.key ? entry.fill : `${entry.fill}88`}
                           stroke={entry.fill}
-                          strokeWidth={filterConn === entry.key ? 3 : 2}
+                          strokeWidth={filterConn === entry.key ? 3 : 1}
                         />
                       ))}
+                      <LabelList
+                        dataKey="count"
+                        position="right"
+                        style={{ fontWeight: 900, fontSize: 13, fontFamily: "var(--font-sans)", fill: "hsl(var(--foreground))" }}
+                        formatter={(v: number) => `${v} actions`}
+                      />
+                    </Bar>
+                    {/* Avg years bar — gold */}
+                    <Bar dataKey="avgYears" name="Avg Yrs Known" fill="#FFD700" stroke="#B8860B" strokeWidth={2}>
+                      <LabelList
+                        dataKey="avgYears"
+                        position="right"
+                        style={{ fontWeight: 900, fontSize: 13, fontFamily: "var(--font-sans)", fill: "#B8860B" }}
+                        formatter={(v: number) => `${v} yrs`}
+                      />
                     </Bar>
                   </BarChart>
                 </ResponsiveContainer>
               </CardContent>
+              <div className="border-t-4 border-border px-4 py-2 bg-muted/30 flex flex-wrap gap-6 text-xs font-bold uppercase text-muted-foreground">
+                <span>* Avg years = approximate length of significant relationship/interaction before retaliation</span>
+                <span className="text-destructive">Political Opponents avg {connCounts.find(c => c.key === "political_opponent")?.avgYears ?? "—"} yrs — driven by Roger Stone's ~40-year association</span>
+              </div>
             </Card>
 
             {/* Connection legend cards */}
