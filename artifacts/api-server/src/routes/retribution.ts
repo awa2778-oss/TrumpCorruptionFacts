@@ -50,7 +50,12 @@ router.get("/retribution", async (req, res) => {
 
     rows.sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
 
-    res.json(rows);
+    const out = rows.map((r) => ({
+      ...r,
+      trumpConnection: r.trumpConnection ?? null,
+      connectionType: r.connectionType ?? null,
+    }));
+    res.json(out);
   } catch (err) {
     req.log.error({ err }, "Failed to list retribution actions");
     res.status(500).json({ error: "Internal server error" });

@@ -16,7 +16,19 @@ import {
   CartesianGrid,
   Cell,
 } from "recharts";
-import { ExternalLink, Target, ChevronDown, ChevronUp } from "lucide-react";
+import {
+  ExternalLink,
+  Target,
+  ChevronDown,
+  ChevronUp,
+  UserCheck,
+  Swords,
+  Scale,
+  Search,
+  MessageSquareX,
+  Building2,
+  ArrowRight,
+} from "lucide-react";
 
 const TARGET_TYPE_CONFIG: Record<string, { label: string; color: string }> = {
   individual:     { label: "Individual",      color: "bg-destructive text-destructive-foreground" },
@@ -30,11 +42,52 @@ const TARGET_TYPE_CONFIG: Record<string, { label: string; color: string }> = {
 };
 
 const OUTCOME_CONFIG: Record<string, { label: string; bg: string }> = {
-  enacted:   { label: "Enacted",         bg: "bg-secondary text-secondary-foreground" },
-  blocked:   { label: "Blocked by Court", bg: "bg-destructive text-destructive-foreground" },
-  reversed:  { label: "Capitulated / Reversed", bg: "bg-orange-600 text-white" },
-  pending:   { label: "Pending",          bg: "bg-yellow-500 text-black" },
-  partial:   { label: "Partial",          bg: "bg-amber-500 text-black" },
+  enacted:  { label: "Enacted",              bg: "bg-secondary text-secondary-foreground" },
+  blocked:  { label: "Blocked by Court",      bg: "bg-destructive text-destructive-foreground" },
+  reversed: { label: "Capitulated / Reversed",bg: "bg-orange-600 text-white" },
+  pending:  { label: "Pending",               bg: "bg-yellow-500 text-black" },
+  partial:  { label: "Partial",               bg: "bg-amber-500 text-black" },
+};
+
+const CONNECTION_CONFIG: Record<string, {
+  label: string; bg: string; border: string; icon: React.FC<{ className?: string }>; hex: string; description: string;
+}> = {
+  appointed: {
+    label: "Trump Appointed", bg: "bg-blue-700 text-white", border: "border-blue-900",
+    icon: ({ className }) => <UserCheck className={className} />,
+    hex: "#1d4ed8",
+    description: "Trump personally appointed this person to a government position — they later turned against him or publicly contradicted his claims",
+  },
+  political_opponent: {
+    label: "Political Opponent", bg: "bg-destructive text-destructive-foreground", border: "border-red-900",
+    icon: ({ className }) => <Swords className={className} />,
+    hex: "#cc0000",
+    description: "Direct political adversary who ran against Trump, or was central to a political battle that defined Trump's career",
+  },
+  legal_adversary: {
+    label: "Legal Adversary", bg: "bg-orange-600 text-white", border: "border-orange-900",
+    icon: ({ className }) => <Scale className={className} />,
+    hex: "#ea580c",
+    description: "Directly involved in building the legal cases that resulted in Trump's indictments or criminal prosecution",
+  },
+  investigator: {
+    label: "Investigated Trump", bg: "bg-purple-700 text-white", border: "border-purple-900",
+    icon: ({ className }) => <Search className={className} />,
+    hex: "#7c3aed",
+    description: "Senior official who opened, led, or participated in the investigations into Trump's 2016 campaign and associates",
+  },
+  critic: {
+    label: "Public Critic", bg: "bg-amber-600 text-black", border: "border-amber-900",
+    icon: ({ className }) => <MessageSquareX className={className} />,
+    hex: "#d97706",
+    description: "Former ally or colleague who publicly broke with Trump and became a vocal critic, often contradicting his claims",
+  },
+  institutional: {
+    label: "Institutional Target", bg: "bg-foreground text-background", border: "border-border",
+    icon: ({ className }) => <Building2 className={className} />,
+    hex: "#374151",
+    description: "No direct personal relationship — targeted as an institution representing ideological opposition or political symbolism",
+  },
 };
 
 const BAR_COLORS: Record<string, string> = {
@@ -46,10 +99,31 @@ const BAR_COLORS: Record<string, string> = {
   other:      "#374151",
 };
 
-function RetributionCard({ item }: { item: NonNullable<ReturnType<typeof useListRetributionActions>["data"]>[number] }) {
+type Item = NonNullable<ReturnType<typeof useListRetributionActions>["data"]>[number];
+
+function ConnectionBadge({ type }: { type: string }) {
+  const cfg = CONNECTION_CONFIG[type] ?? CONNECTION_CONFIG.institutional;
+  const Icon = cfg.icon;
+  return (
+    <span className={`inline-flex items-center gap-1 px-2 py-1 text-xs font-black uppercase border-2 ${cfg.bg} ${cfg.border}`}>
+      <Icon className="w-3 h-3" />
+      {cfg.label}
+    </span>
+  );
+}
+
+function RetributionCard({ item }: { item: Item }) {
   const [expanded, setExpanded] = useState(false);
-  const ttCfg = TARGET_TYPE_CONFIG[item.targetType] ?? TARGET_TYPE_CONFIG.other;
+  const ttCfg  = TARGET_TYPE_CONFIG[item.targetType] ?? TARGET_TYPE_CONFIG.other;
   const outCfg = OUTCOME_CONFIG[item.outcome] ?? OUTCOME_CONFIG.pending;
+  const connType = (item as any).connectionType as string | null;
+  const connText = (item as any).trumpConnection as string | null;
+  const connCfg  = CONNECTION_CONFIG[connType ?? "institutional"] ?? CONNECTION_CONFIG.institutional;
+  const ConnIcon = connCfg.icon;
+
+  const refs = Array.isArray(item.references)
+    ? (item.references as Array<{ title: string; url: string; source: string }>)
+    : [];
 
   return (
     <Card
@@ -67,6 +141,7 @@ function RetributionCard({ item }: { item: NonNullable<ReturnType<typeof useList
             <p className="text-sm font-semibold text-muted-foreground mt-1 truncate">Target: {item.target}</p>
           </div>
           <div className="flex flex-wrap gap-2 shrink-0 items-center">
+            {connType && <ConnectionBadge type={connType} />}
             <span className={`px-2 py-1 text-xs font-bold uppercase border-2 border-border ${ttCfg.color}`}>
               {ttCfg.label}
             </span>
@@ -80,6 +155,32 @@ function RetributionCard({ item }: { item: NonNullable<ReturnType<typeof useList
 
       {expanded && (
         <CardContent className="p-5 space-y-4">
+
+          {/* Prior connection to Trump — the centrepiece */}
+          {connText && (
+            <div
+              className="border-4 p-4 space-y-2"
+              style={{ borderColor: connCfg.hex, background: `${connCfg.hex}12` }}
+            >
+              <div className="flex items-center gap-2 flex-wrap">
+                <span
+                  className={`inline-flex items-center gap-1 px-2 py-1 text-xs font-black uppercase border-2 ${connCfg.bg} ${connCfg.border}`}
+                >
+                  <ConnIcon className="w-3 h-3" />
+                  Prior Connection to Trump
+                </span>
+                <span className="text-xs font-bold uppercase text-muted-foreground">
+                  {connCfg.label}
+                </span>
+              </div>
+              <p className="text-sm font-semibold leading-relaxed">{connText}</p>
+              <div className="flex items-center gap-2 pt-1 text-xs font-bold uppercase text-muted-foreground border-t border-border/40 pt-2">
+                <ArrowRight className="w-3 h-3 shrink-0" style={{ color: connCfg.hex }} />
+                <span style={{ color: connCfg.hex }}>{connCfg.description}</span>
+              </div>
+            </div>
+          )}
+
           <p className="text-sm leading-relaxed">{item.description}</p>
 
           <div className="border-l-4 border-primary pl-4 bg-primary/5 py-2">
@@ -94,9 +195,9 @@ function RetributionCard({ item }: { item: NonNullable<ReturnType<typeof useList
             </div>
           )}
 
-          {Array.isArray(item.references) && item.references.length > 0 && (
+          {refs.length > 0 && (
             <div className="flex flex-wrap gap-2 pt-1">
-              {(item.references as Array<{ title: string; url: string; source: string }>).map((ref, idx) => (
+              {refs.map((ref, idx) => (
                 <a
                   key={idx}
                   href={ref.url}
@@ -118,14 +219,32 @@ function RetributionCard({ item }: { item: NonNullable<ReturnType<typeof useList
 }
 
 export default function RetributionPage() {
-  const [filterType, setFilterType] = useState<string>("");
+  const [filterType, setFilterType]       = useState<string>("");
   const [filterOutcome, setFilterOutcome] = useState<string>("");
+  const [filterConn, setFilterConn]       = useState<string>("");
 
   const { data: items, isLoading } = useListRetributionActions(
     { targetType: filterType || undefined, outcome: filterOutcome || undefined },
     { query: { queryKey: getListRetributionActionsQueryKey({ targetType: filterType || undefined, outcome: filterOutcome || undefined }) } }
   );
   const { data: stats, isLoading: statsLoading } = useGetRetributionStats();
+
+  const displayed = filterConn
+    ? items?.filter((i) => (i as any).connectionType === filterConn)
+    : items;
+
+  // Count by connection type from full dataset
+  const connCounts = items
+    ? Object.entries(
+        items.reduce<Record<string, number>>((acc, i) => {
+          const k = ((i as any).connectionType as string) ?? "institutional";
+          acc[k] = (acc[k] ?? 0) + 1;
+          return acc;
+        }, {})
+      )
+        .map(([key, count]) => ({ key, count, label: CONNECTION_CONFIG[key]?.label ?? key, fill: CONNECTION_CONFIG[key]?.hex ?? "#374151" }))
+        .sort((a, b) => b.count - a.count)
+    : [];
 
   return (
     <div className="p-8 space-y-12 max-w-7xl mx-auto">
@@ -137,11 +256,11 @@ export default function RetributionPage() {
               The Revenge Tour
             </h1>
             <p className="text-xl font-bold uppercase tracking-widest text-muted-foreground mt-2">
-              Targeted actions against individuals, institutions, and perceived enemies
+              Targeted actions — and how each target was once connected to Trump
             </p>
           </div>
         </div>
-        <div className="mt-4 border-4 border-destructive p-4 bg-destructive/5">
+        <div className="border-4 border-destructive p-4 bg-destructive/5">
           <p className="text-sm font-bold uppercase tracking-wider leading-relaxed">
             Note: These actions have been characterized by legal scholars, opposition politicians, former officials, and major media outlets as politically motivated retaliation.
             All items include primary source citations. This section documents — it does not editorialize.
@@ -150,21 +269,16 @@ export default function RetributionPage() {
       </header>
 
       {/* Stats */}
-      {statsLoading ? (
-        <Skeleton className="h-[160px] w-full" />
-      ) : (
+      {statsLoading ? <Skeleton className="h-[160px] w-full" /> : (
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
           {[
-            { label: "Total Targeted Actions", value: stats?.total ?? 0, color: "bg-foreground text-background" },
+            { label: "Total Targeted Actions", value: stats?.total ?? 0,   color: "bg-foreground text-background" },
             { label: "Blocked by Courts",       value: stats?.blocked ?? 0, color: "bg-destructive text-destructive-foreground" },
-            { label: "Judicially Reversed",     value: stats?.judiciallyReversed ?? 0, color: "bg-orange-600 text-white" },
-            { label: "Targets: Law Firms",       value: stats?.byTargetType?.find(t => t.targetType === "law_firm")?.count ?? 0, color: "bg-secondary text-secondary-foreground" },
+            { label: "Trump Appointees Targeted", value: items?.filter((i) => (i as any).connectionType === "appointed").length ?? 0, color: "bg-blue-700 text-white" },
+            { label: "Legal Adversaries",        value: items?.filter((i) => (i as any).connectionType === "legal_adversary").length ?? 0, color: "bg-orange-600 text-white" },
           ].map((s) => (
-            <Card
-              key={s.label}
-              data-testid={`ret-stat-${s.label.replace(/\s+/g, "-").toLowerCase()}`}
-              className="border-4 border-border rounded-none shadow-[6px_6px_0px_0px_hsl(var(--border))]"
-            >
+            <Card key={s.label} data-testid={`ret-stat-${s.label.replace(/\s+/g, "-").toLowerCase()}`}
+              className="border-4 border-border rounded-none shadow-[6px_6px_0px_0px_hsl(var(--border))]">
               <CardHeader className={`border-b-4 border-border py-3 px-4 ${s.color}`}>
                 <CardTitle className="text-xs uppercase tracking-widest font-bold">{s.label}</CardTitle>
               </CardHeader>
@@ -176,79 +290,101 @@ export default function RetributionPage() {
         </div>
       )}
 
-      {/* Charts */}
-      {!statsLoading && stats && (
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-          <Card className="border-4 border-border rounded-none shadow-[8px_8px_0px_0px_hsl(var(--destructive))]">
-            <CardHeader className="border-b-4 border-border bg-destructive text-destructive-foreground">
-              <CardTitle className="text-xl uppercase tracking-wider">Actions by Target Type</CardTitle>
-            </CardHeader>
-            <CardContent className="p-4 h-[300px]">
-              <ResponsiveContainer width="100%" height="100%">
-                <BarChart
-                  data={[...stats.byTargetType].sort((a, b) => b.count - a.count).map((t) => ({
-                    name: TARGET_TYPE_CONFIG[t.targetType]?.label ?? t.targetType,
-                    Count: t.count,
-                    key: t.targetType,
-                  }))}
-                  margin={{ top: 10, right: 20, left: 0, bottom: 60 }}
-                >
-                  <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" vertical={false} />
-                  <XAxis
-                    dataKey="name"
-                    tick={{ fontFamily: "var(--font-sans)", fontWeight: "bold", fontSize: 11, fill: "hsl(var(--foreground))" }}
-                    angle={-40}
-                    textAnchor="end"
-                    interval={0}
-                  />
-                  <YAxis tick={{ fontFamily: "var(--font-sans)", fontWeight: "bold", fill: "hsl(var(--foreground))" }} />
-                  <Tooltip
-                    cursor={{ fill: "hsl(var(--muted))" }}
-                    contentStyle={{ border: "4px solid hsl(var(--border))", borderRadius: 0, fontWeight: "bold", textTransform: "uppercase" }}
-                  />
-                  <Bar dataKey="Count" stroke="hsl(var(--border))" strokeWidth={2}>
-                    {[...stats.byTargetType].sort((a, b) => b.count - a.count).map((t) => (
-                      <Cell key={t.targetType} fill={BAR_COLORS[t.targetType] ?? "#374151"} />
-                    ))}
-                  </Bar>
-                </BarChart>
-              </ResponsiveContainer>
-            </CardContent>
-          </Card>
+      {/* Connection breakdown section */}
+      <section className="space-y-6">
+        <h2 className="text-3xl uppercase tracking-wider border-b-4 border-border pb-3 drop-shadow-[3px_3px_0px_rgba(204,0,0,1)]">
+          Prior Connection to Trump — by Type
+        </h2>
+        <p className="text-sm font-semibold text-muted-foreground uppercase tracking-wider">
+          How each target was once connected to Trump before becoming a retaliation subject.
+          Click any row to filter the list below.
+        </p>
 
-          <Card className="border-4 border-border rounded-none shadow-[8px_8px_0px_0px_hsl(var(--primary))]">
-            <CardHeader className="border-b-4 border-border bg-secondary text-secondary-foreground">
-              <CardTitle className="text-xl uppercase tracking-wider">Actions by Outcome</CardTitle>
-            </CardHeader>
-            <CardContent className="p-4 h-[300px]">
-              <ResponsiveContainer width="100%" height="100%">
-                <BarChart
-                  data={[...stats.byOutcome].sort((a, b) => b.count - a.count).map((o) => ({
-                    name: OUTCOME_CONFIG[o.outcome]?.label ?? o.outcome,
-                    Count: o.count,
-                  }))}
-                  margin={{ top: 10, right: 20, left: 0, bottom: 80 }}
+        {!statsLoading && items && (
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+            {/* Connection type bar chart */}
+            <Card className="border-4 border-border rounded-none shadow-[8px_8px_0px_0px_hsl(var(--destructive))] lg:col-span-2">
+              <CardHeader className="border-b-4 border-border bg-destructive text-destructive-foreground">
+                <CardTitle className="text-xl uppercase tracking-wider">Actions by Connection Type</CardTitle>
+              </CardHeader>
+              <CardContent className="p-4 h-[260px]">
+                <ResponsiveContainer width="100%" height="100%">
+                  <BarChart
+                    layout="vertical"
+                    data={connCounts}
+                    margin={{ top: 5, right: 60, left: 10, bottom: 5 }}
+                    onClick={(d) => {
+                      if (d?.activePayload?.[0]?.payload?.key) {
+                        const k = d.activePayload[0].payload.key as string;
+                        setFilterConn(filterConn === k ? "" : k);
+                      }
+                    }}
+                  >
+                    <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" horizontal={false} />
+                    <XAxis type="number" allowDecimals={false} tick={{ fontFamily: "var(--font-sans)", fontWeight: "bold", fill: "hsl(var(--foreground))" }} />
+                    <YAxis
+                      type="category"
+                      dataKey="label"
+                      width={160}
+                      tick={{ fontFamily: "var(--font-sans)", fontWeight: 900, fontSize: 11, fill: "hsl(var(--foreground))" }}
+                    />
+                    <Tooltip
+                      cursor={{ fill: "hsl(var(--muted))" }}
+                      contentStyle={{ border: "4px solid hsl(var(--border))", borderRadius: 0, fontWeight: "bold", textTransform: "uppercase" }}
+                      formatter={(v) => [v, "Actions"]}
+                    />
+                    <Bar
+                      dataKey="count"
+                      stroke="hsl(var(--border))"
+                      strokeWidth={2}
+                      label={{ position: "right", fontWeight: 900, fontSize: 14, fontFamily: "var(--font-sans)", fill: "hsl(var(--foreground))" }}
+                    >
+                      {connCounts.map((entry, idx) => (
+                        <Cell
+                          key={idx}
+                          fill={filterConn === entry.key ? entry.fill : `${entry.fill}99`}
+                          stroke={entry.fill}
+                          strokeWidth={filterConn === entry.key ? 3 : 2}
+                        />
+                      ))}
+                    </Bar>
+                  </BarChart>
+                </ResponsiveContainer>
+              </CardContent>
+            </Card>
+
+            {/* Connection legend cards */}
+            {Object.entries(CONNECTION_CONFIG).map(([key, cfg]) => {
+              const count = items.filter((i) => (i as any).connectionType === key).length;
+              if (count === 0) return null;
+              const Icon = cfg.icon;
+              return (
+                <Card
+                  key={key}
+                  data-testid={`conn-card-${key}`}
+                  onClick={() => setFilterConn(filterConn === key ? "" : key)}
+                  className={`border-4 rounded-none cursor-pointer transition-all hover:scale-[1.02] ${filterConn === key ? "ring-4 ring-offset-1" : ""}`}
+                  style={{ borderColor: cfg.hex, outlineColor: cfg.hex }}
                 >
-                  <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" vertical={false} />
-                  <XAxis
-                    dataKey="name"
-                    tick={{ fontFamily: "var(--font-sans)", fontWeight: "bold", fontSize: 11, fill: "hsl(var(--foreground))" }}
-                    angle={-40}
-                    textAnchor="end"
-                    interval={0}
-                  />
-                  <YAxis tick={{ fontFamily: "var(--font-sans)", fontWeight: "bold", fill: "hsl(var(--foreground))" }} />
-                  <Tooltip
-                    cursor={{ fill: "hsl(var(--muted))" }}
-                    contentStyle={{ border: "4px solid hsl(var(--border))", borderRadius: 0, fontWeight: "bold", textTransform: "uppercase" }}
-                  />
-                  <Bar dataKey="Count" fill="hsl(var(--primary))" stroke="hsl(var(--border))" strokeWidth={2} />
-                </BarChart>
-              </ResponsiveContainer>
-            </CardContent>
-          </Card>
-        </div>
-      )}
+                  <CardHeader className={`border-b-4 py-3 px-4 ${cfg.bg}`} style={{ borderColor: cfg.hex }}>
+                    <CardTitle className="text-xs uppercase tracking-widest font-bold flex items-center gap-2">
+                      <Icon className="w-4 h-4" />
+                      {cfg.label}
+                      <span className="ml-auto text-base font-black">{count}</span>
+                    </CardTitle>
+                  </CardHeader>
+                  <CardContent className="p-3">
+                    <p className="text-xs font-semibold leading-relaxed text-muted-foreground">{cfg.description}</p>
+                    <p className="text-xs font-black uppercase mt-2" style={{ color: cfg.hex }}>
+                      {filterConn === key ? "▶ Filtering — click to clear" : "Click to filter list"}
+                    </p>
+                  </CardContent>
+                </Card>
+              );
+            })}
+          </div>
+        )}
+      </section>
 
       {/* Target type quick filters */}
       <div className="flex flex-wrap gap-2">
@@ -266,18 +402,19 @@ export default function RetributionPage() {
         ))}
         <button
           data-testid="filter-chip-clear"
-          onClick={() => { setFilterType(""); setFilterOutcome(""); }}
+          onClick={() => { setFilterType(""); setFilterOutcome(""); setFilterConn(""); }}
           className="px-3 py-1 text-xs font-bold uppercase border-2 border-border bg-background text-muted-foreground hover:bg-muted transition-all"
         >
-          Clear Filters
+          Clear All Filters
         </button>
       </div>
 
-      {/* Outcome filter */}
+      {/* List header */}
       <div className="border-b-4 border-border pb-4 flex flex-wrap items-center gap-4">
         <h2 className="text-3xl uppercase tracking-wider drop-shadow-[3px_3px_0px_rgba(204,0,0,1)]">
-          {items ? `${items.length} Action${items.length !== 1 ? "s" : ""}` : "Loading..."}
-          {filterType && ` — ${TARGET_TYPE_CONFIG[filterType]?.label}`}
+          {displayed ? `${displayed.length} Action${displayed.length !== 1 ? "s" : ""}` : "Loading..."}
+          {filterType  && ` — ${TARGET_TYPE_CONFIG[filterType]?.label}`}
+          {filterConn  && ` — ${CONNECTION_CONFIG[filterConn]?.label}`}
         </h2>
         <select
           data-testid="ret-filter-outcome"
@@ -298,8 +435,8 @@ export default function RetributionPage() {
         </div>
       ) : (
         <div className="space-y-3">
-          {items?.map((item) => <RetributionCard key={item.id} item={item} />)}
-          {items?.length === 0 && (
+          {displayed?.map((item) => <RetributionCard key={item.id} item={item} />)}
+          {displayed?.length === 0 && (
             <div className="border-4 border-border p-12 text-center">
               <p className="font-bold text-xl uppercase text-muted-foreground">No actions match the selected filters.</p>
             </div>

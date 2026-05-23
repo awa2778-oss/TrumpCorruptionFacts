@@ -12,6 +12,8 @@ export const retributionActionsTable = pgTable("retribution_actions", {
   outcome: text("outcome").notNull(),
   judicialResponse: text("judicial_response"),
   significance: text("significance").notNull(),
+  trumpConnection: text("trump_connection"),
+  connectionType: text("connection_type"),
   references: jsonb("references").notNull().default([]),
 });
 

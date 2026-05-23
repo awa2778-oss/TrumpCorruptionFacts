@@ -125,6 +125,16 @@ export interface RetributionAction {
   /** @nullable */
   judicialResponse?: string | null;
   significance: string;
+  /**
+     * Description of the prior relationship between Trump and the target before the retaliatory action
+     * @nullable
+     */
+  trumpConnection?: string | null;
+  /**
+     * appointed | political_opponent | legal_adversary | investigator | critic | institutional
+     * @nullable
+     */
+  connectionType?: string | null;
   references: Reference[];
 }
 

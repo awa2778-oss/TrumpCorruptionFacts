@@ -596,6 +596,12 @@ components:
           type: ["string", "null"]
         significance:
           type: string
+        trumpConnection:
+          type: ["string", "null"]
+          description: "Description of the prior relationship between Trump and the target before the retaliatory action"
+        connectionType:
+          type: ["string", "null"]
+          description: "appointed | political_opponent | legal_adversary | investigator | critic | institutional"
         references:
           type: array
           items:
