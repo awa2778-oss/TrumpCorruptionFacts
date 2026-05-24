@@ -7,6 +7,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import {
   DollarSign, TrendingUp, TrendingDown, AlertTriangle,
   ExternalLink, Coins, ChevronDown, ChevronUp, Scale,
+  Utensils, Globe, Gavel, Users, Flag, ShieldAlert,
 } from "lucide-react";
 import { useState } from "react";
 
@@ -165,6 +166,33 @@ const POLICY_CONFLICTS = [
     beneficiary: "WLFI / USD1 stablecoin",
     severity: "high",
   },
+];
+
+// ─── Mar-a-Lago $TRUMP Dinner data ───────────────────────────────────────────
+
+const DINNER_STATS = [
+  { label: "Holders Invited to Dinner", value: "220", sub: "ranked by $TRUMP wallet balance", color: "bg-destructive text-white" },
+  { label: "VIP Reception Invitees", value: "Top 25", sub: "private reception before dinner", color: "bg-foreground text-background" },
+  { label: "Est. Min. Holding to Qualify", value: "~$2.6M", sub: "in $TRUMP at time of cutoff", color: "bg-amber-600 text-white" },
+  { label: "Price Surge on Announcement", value: "+70%", sub: "$8.10 → $14.56 in 24 hrs", color: "bg-orange-600 text-white" },
+  { label: "Trump Family Gain (paper)", value: "~$5.2B+", sub: "on 800M tokens during 70% surge", color: "bg-destructive text-white" },
+  { label: "Dinner Location", value: "Mar-a-Lago", sub: "Palm Beach, FL — May 22, 2025", color: "bg-foreground text-background" },
+];
+
+const DINNER_TIMELINE = [
+  { date: "May 5, 2025",  label: "Dinner Announced", detail: "Official $TRUMP website posts: top 220 coin holders by wallet balance will be invited to a private dinner with President Trump at his Mar-a-Lago golf club. Top 25 holders receive a VIP reception before the dinner." },
+  { date: "May 6–18",     label: "Ranking Period / Coin Frenzy", detail: "Coin price surges 70% in 24 hours as traders rush to buy in. Blockchain analysts begin flagging large wallet purchases by accounts linked to Chinese nationals, foreign entities, and anonymous buyers attempting to rank in the top 220. Estimated $500M+ in new purchases." },
+  { date: "May 14",       label: "Senate Democrats Demand Investigation", detail: "Senators Warner, Merkley, and Schiff send letters to the DOJ and OGE demanding investigation into potential Foreign Emoluments Clause violations. The ETHICS Act is formally introduced — legislation that would ban sitting presidents from operating personal crypto assets." },
+  { date: "May 19",       label: "Attendee List Scrutiny Begins", detail: "Reuters and WaPo report that blockchain investigators identified multiple wallets in the top 220 linked to Chinese nationals, one with apparent ties to a state-affiliated Chinese corporation. Congressional leaders request Treasury and OFAC review." },
+  { date: "May 22, 2025", label: "THE DINNER — Mar-a-Lago", detail: "Approximately 200 attendees dine with President Trump at his private Mar-a-Lago club. No press pool. No public attendee list. Trump posed for photos and reportedly spoke for ~20 minutes. The White House declined to disclose any details." },
+  { date: "May 23+",      label: "Fallout & Investigations", detail: "Multiple ethics organizations file FOIA requests. CREW files ethics complaint. The Senate Foreign Relations Committee requests a briefing from the State Dept on foreign nationals present. The dinner becomes a flashpoint in ongoing STOCK Act and Emoluments reform debates." },
+];
+
+const DINNER_REACTIONS = [
+  { name: "Walter Shaub", role: "Former Director, Office of Government Ethics", quote: "This is as blatant a case of selling access to the president as I can imagine. The president is literally conducting a financial transaction that gives him money and in exchange people get access to him. It's corruption in plain sight." },
+  { name: "Sen. Jeff Merkley", role: "U.S. Senate (D-OR)", quote: "This is a direct and brazen violation of the Constitution's emoluments clause. Foreign nationals are buying a meme coin in order to purchase access to the sitting president of the United States." },
+  { name: "Rep. Jamie Raskin", role: "U.S. House (D-MD)", quote: "No previous president has done anything remotely like this. Trump is essentially charging admission to meet with the president of the United States using a cryptocurrency he personally profits from." },
+  { name: "Sen. Adam Schiff", role: "U.S. Senate (D-CA), ETHICS Act sponsor", quote: "We have introduced legislation to end this. No president should be able to operate a personal cryptocurrency, no president should be able to sell access to themselves via a financial product they personally benefit from." },
 ];
 
 // Estimated losses by retail investors in $TRUMP coin
@@ -424,6 +452,201 @@ export default function EnrichmentPage() {
             </a>
           </div>
         </div>
+      </section>
+
+      {/* ── THE MAR-A-LAGO DINNER SECTION ── */}
+      <section className="space-y-6" id="dinner-section">
+
+        {/* Red header banner */}
+        <div className="border-8 border-destructive bg-destructive text-white p-5 flex flex-wrap items-center gap-4"
+          style={{ boxShadow: "8px 8px 0px 0px #7f1d1d" }}>
+          <Utensils className="w-10 h-10 shrink-0" strokeWidth={3} />
+          <div>
+            <p className="text-xs font-black uppercase tracking-widest opacity-75">Presidential Access for Sale · May 22, 2025</p>
+            <h2 className="text-3xl md:text-4xl uppercase tracking-wider leading-tight">
+              The Mar-a-Lago $TRUMP Coin Dinner
+            </h2>
+            <p className="text-sm font-bold uppercase tracking-wider opacity-90 mt-1">
+              Pay for your $TRUMP ranking · Secure a seat · Dine with the president of the United States
+            </p>
+          </div>
+        </div>
+
+        {/* Intro context */}
+        <div className="border-4 border-destructive bg-destructive/5 p-5">
+          <p className="text-sm font-bold uppercase tracking-wider leading-relaxed">
+            On <span className="font-black text-destructive">May 5, 2025</span>, the official $TRUMP meme coin website announced
+            that the <span className="font-black">top 220 holders</span> of the coin — ranked by wallet balance — would receive
+            a personal invitation to dine with President Trump at <span className="font-black">Mar-a-Lago</span>, his private resort
+            in Palm Beach, Florida. The top 25 holders would receive an exclusive <span className="font-black">VIP reception</span> before
+            the dinner. There was no application process, no background check, and no disclosure of who attended.
+            Access to the sitting president was available to anyone who could afford enough of his personal meme coin.
+          </p>
+        </div>
+
+        {/* Key stats grid */}
+        <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
+          {DINNER_STATS.map(s => (
+            <Card key={s.label} className="border-4 border-border rounded-none shadow-[4px_4px_0px_0px_rgba(204,0,0,1)]">
+              <CardHeader className={`border-b-4 border-border py-2 px-3 ${s.color}`}>
+                <CardTitle className="text-xs uppercase tracking-widest font-bold leading-tight">{s.label}</CardTitle>
+              </CardHeader>
+              <CardContent className="p-3">
+                <p className="text-3xl font-black tracking-wider">{s.value}</p>
+                <p className="text-xs font-semibold text-muted-foreground mt-1">{s.sub}</p>
+              </CardContent>
+            </Card>
+          ))}
+        </div>
+
+        {/* Timeline */}
+        <div className="space-y-4">
+          <div className="flex items-center gap-3 border-b-4 border-destructive pb-3">
+            <Flag className="w-7 h-7 text-destructive" strokeWidth={3} />
+            <h3 className="text-2xl uppercase tracking-wider drop-shadow-[2px_2px_0px_rgba(204,0,0,1)]">
+              Timeline of Events
+            </h3>
+          </div>
+
+          <div className="space-y-0 border-4 border-border overflow-hidden"
+            style={{ boxShadow: "6px 6px 0px 0px rgba(204,0,0,1)" }}>
+            {DINNER_TIMELINE.map((item, i) => (
+              <div key={i}
+                className={`grid grid-cols-1 md:grid-cols-[200px_1fr] border-b-4 last:border-b-0 border-border ${item.date === "May 22, 2025" ? "bg-destructive/10" : ""}`}>
+                <div className={`px-4 py-4 border-b-4 md:border-b-0 md:border-r-4 border-border flex flex-col justify-center ${item.date === "May 22, 2025" ? "bg-destructive text-white" : "bg-muted/40"}`}>
+                  <p className={`text-xs font-black uppercase tracking-widest ${item.date === "May 22, 2025" ? "text-white/70" : "text-muted-foreground"}`}>Date</p>
+                  <p className="font-black text-sm uppercase tracking-wide">{item.date}</p>
+                  {item.date === "May 22, 2025" && (
+                    <span className="text-xs font-black uppercase mt-1 bg-white text-destructive px-2 py-0.5 inline-block w-fit">DINNER NIGHT</span>
+                  )}
+                </div>
+                <div className="p-4 space-y-1">
+                  <p className="font-black uppercase tracking-wide text-sm">{item.label}</p>
+                  <p className="text-sm font-semibold leading-relaxed text-muted-foreground">{item.detail}</p>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        {/* Foreign nationals concern */}
+        <div className="border-4 border-orange-600 bg-orange-50 dark:bg-orange-950/20 p-5 space-y-4">
+          <div className="flex items-start gap-3">
+            <Globe className="w-8 h-8 text-orange-600 shrink-0 mt-0.5" strokeWidth={3} />
+            <div>
+              <h3 className="text-xl font-black uppercase tracking-wider text-orange-700 dark:text-orange-400">
+                Foreign Nationals & Emoluments Concerns
+              </h3>
+              <p className="text-sm font-bold leading-relaxed mt-2">
+                Blockchain analytics firms and Congressional investigators identified <span className="font-black">multiple wallets
+                in the top 220</span> controlled by foreign nationals, including Chinese citizens and at least one account
+                with apparent ties to a <span className="font-black">state-affiliated Chinese corporation</span>. Because wallet
+                ownership is pseudonymous, the White House could not verify — and chose not to verify — the citizenship
+                or national origin of any attendees.
+              </p>
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-3 mt-4">
+                {[
+                  { icon: Globe, title: "Foreign Emoluments Clause", body: "Art. I §9 of the Constitution bars the president from receiving gifts or payments from foreign governments. Coin purchases by foreign nationals connected to foreign states to gain presidential access are a direct test case.", color: "border-orange-600" },
+                  { icon: ShieldAlert, title: "No Vetting Process", body: "The White House confirmed it conducted no national security screening of dinner attendees. Anyone who held enough $TRUMP could attend — regardless of their country, background, or government affiliations.", color: "border-destructive" },
+                  { icon: Gavel, title: "No Congressional Consent", body: "The Foreign Emoluments Clause requires Congressional approval before the president accepts foreign gifts. No such consent was sought. Ethics watchdogs note this alone may constitute a constitutional violation.", color: "border-orange-600" },
+                ].map(item => (
+                  <div key={item.title} className={`border-4 ${item.color} bg-background p-3 space-y-1`}>
+                    <p className="text-xs font-black uppercase tracking-widest text-orange-600">{item.title}</p>
+                    <p className="text-sm font-semibold leading-relaxed">{item.body}</p>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Reaction quotes */}
+        <div className="space-y-3">
+          <div className="flex items-center gap-3 border-b-4 border-border pb-3">
+            <Users className="w-7 h-7" strokeWidth={3} />
+            <h3 className="text-2xl uppercase tracking-wider">Reactions from Ethics Officials & Congress</h3>
+          </div>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            {DINNER_REACTIONS.map((r, i) => (
+              <blockquote key={i}
+                className="border-4 border-border bg-muted/20 p-4 space-y-2"
+                style={{ boxShadow: "4px 4px 0px 0px hsl(var(--border))" }}>
+                <p className="text-sm font-bold leading-relaxed italic">"{r.quote}"</p>
+                <footer className="border-t-2 border-border pt-2">
+                  <p className="text-xs font-black uppercase tracking-wider">{r.name}</p>
+                  <p className="text-xs font-bold text-muted-foreground uppercase tracking-wider">{r.role}</p>
+                </footer>
+              </blockquote>
+            ))}
+          </div>
+        </div>
+
+        {/* Congressional action */}
+        <div className="border-4 border-foreground p-5 space-y-4" style={{ boxShadow: "6px 6px 0px 0px hsl(var(--border))" }}>
+          <div className="flex items-center gap-3">
+            <Gavel className="w-7 h-7" strokeWidth={3} />
+            <h3 className="text-xl font-black uppercase tracking-wider">Congressional & Legal Response</h3>
+          </div>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            {[
+              {
+                title: "ETHICS Act (S. 1462)",
+                sponsor: "Sens. Schiff, Merkley, Warren",
+                text: "Would prohibit sitting presidents, vice presidents, members of Congress, senior executive officials, and their spouses and children from issuing, sponsoring, or holding personal cryptocurrency while in office. Introduced directly in response to the $TRUMP dinner.",
+                status: "Introduced — Senate Banking Committee",
+                statusColor: "bg-amber-500 text-black",
+              },
+              {
+                title: "Senate Investigation Request",
+                sponsor: "Senate Foreign Relations Committee",
+                text: "Committee chair requested a classified briefing from the State Dept and intelligence community on whether any foreign government-linked entities purchased $TRUMP specifically to attend the dinner and access the president.",
+                status: "Pending — State Dept Response Requested",
+                statusColor: "bg-orange-600 text-white",
+              },
+              {
+                title: "CREW Ethics Complaint",
+                sponsor: "Citizens for Responsibility and Ethics in Washington",
+                text: "Filed a formal ethics complaint with the OGE and DOJ, alleging the dinner constitutes an illegal emolument under both the Foreign and Domestic Emoluments Clauses and requesting a Special Counsel investigation.",
+                status: "Filed — OGE Under Review",
+                statusColor: "bg-destructive text-white",
+              },
+              {
+                title: "FOIA Requests — Attendee List",
+                sponsor: "Multiple press organizations + ACLU",
+                text: "Over a dozen FOIA requests filed to obtain the full attendee list, any White House communications about attendee vetting, and records of the dinner's security clearance process. White House has declined to release any information.",
+                status: "Pending — White House Stonewalling",
+                statusColor: "bg-foreground text-background",
+              },
+            ].map(item => (
+              <div key={item.title} className="border-4 border-border p-4 space-y-2">
+                <div className="flex flex-wrap items-start justify-between gap-2">
+                  <p className="font-black uppercase tracking-wide text-sm">{item.title}</p>
+                  <span className={`px-2 py-0.5 text-xs font-black uppercase border-2 border-border ${item.statusColor}`}>{item.status}</span>
+                </div>
+                <p className="text-xs font-bold text-muted-foreground uppercase tracking-widest">{item.sponsor}</p>
+                <p className="text-sm font-semibold leading-relaxed">{item.text}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        {/* Reference links */}
+        <div className="flex flex-wrap gap-3">
+          {[
+            { label: "NYT: Trump Meme Coin Dinner", url: "https://www.nytimes.com/2025/05/05/us/politics/trump-meme-coin-dinner.html" },
+            { label: "WaPo: Foreign Buyers & Emoluments", url: "https://www.washingtonpost.com/politics/2025/05/trump-meme-coin-foreign-buyers-emoluments/" },
+            { label: "Reuters: $TRUMP Dinner Controversy", url: "https://www.reuters.com/world/us/trump-meme-coin-dinner-mar-a-lago-2025-05/" },
+            { label: "Congress.gov: ETHICS Act (S.1462)", url: "https://www.congress.gov/bill/119th-congress/senate-bill/1462" },
+            { label: "CREW: Emoluments Complaint", url: "https://www.citizensforethics.org/reports-investigations/crew-reports/trump-conflicts-of-interest/" },
+            { label: "CoinDesk: Dinner Wallet Analysis", url: "https://www.coindesk.com/markets/2025/05/trump-dinner-top-220-wallets-analysis/" },
+          ].map(ref => (
+            <a key={ref.label} href={ref.url} target="_blank" rel="noopener noreferrer"
+              className="inline-flex items-center gap-1 px-3 py-2 text-xs font-bold uppercase border-2 border-border bg-background hover:bg-accent transition-colors">
+              <ExternalLink className="w-3 h-3" /> {ref.label}
+            </a>
+          ))}
+        </div>
+
       </section>
 
       {/* Revenue streams */}
