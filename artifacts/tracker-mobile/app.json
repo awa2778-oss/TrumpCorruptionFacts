@@ -40,6 +40,12 @@
     "experiments": {
       "typedRoutes": true,
       "reactCompiler": true
-    }
+    },
+    "extra": {
+      "eas": {
+        "projectId": "6f8700b9-7640-4ee4-bfc1-5fb9aa1b2313"
+      }
+    },
+    "owner": "admintracker"
   }
 }
