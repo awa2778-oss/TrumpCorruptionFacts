@@ -6,6 +6,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import {
   HeartPulse, DollarSign, AlertTriangle, TrendingDown, TrendingUp,
   Landmark, Users, BookOpen, ChevronDown, ChevronUp, ExternalLink,
+  Clock, Moon, FileText, AlertOctagon, Timer,
 } from "lucide-react";
 import { useState } from "react";
 
@@ -166,6 +167,76 @@ const BILL_PROVISIONS = [
   },
 ];
 
+// ─── Procedural speed data ──────────────────────────────────────────────────
+
+const LEGISLATIVE_TIMELINE = [
+  {
+    time: "~11:00 PM",
+    date: "May 21, 2025",
+    event: "Text dropped on lawmakers",
+    detail: "The final 1,116-page consolidated text of H.R. 1 was released to all House members late at night — giving Democrats, and many Republicans, their first look at the bill they would vote on hours later.",
+    icon: "moon",
+    color: "#7c3aed",
+  },
+  {
+    time: "~3:00 AM",
+    date: "May 22, 2025",
+    event: "House Rules Committee convenes — in the middle of the night",
+    detail: "The Rules Committee, which sets the terms of floor debate, met at approximately 3am to approve the rule governing debate. Democrats were unable to offer amendments. The committee is controlled by Republicans and approved the rule on a party-line vote.",
+    icon: "gavel",
+    color: "#cc0000",
+  },
+  {
+    time: "~6:30 AM",
+    date: "May 22, 2025",
+    event: "House floor debate begins",
+    detail: "Floor debate opened on a bill whose full CBO cost estimate had not yet been published. Members were debating a $3.3 trillion deficit increase without the official score in hand.",
+    icon: "mic",
+    color: "#ea580c",
+  },
+  {
+    time: "~7:30 AM",
+    date: "May 22, 2025",
+    event: "House passes 215–214",
+    detail: "The House passed the bill by a single vote. Approximately 8 hours elapsed between text release and final passage. One Republican (Thomas Massie) voted against citing procedural concerns about the rush.",
+    icon: "check",
+    color: "#059669",
+  },
+];
+
+const PROCEDURAL_SHORTCUTS = [
+  {
+    skipped: "Normal committee markup",
+    what_it_means: "Bills are typically debated line-by-line in committee, where members of both parties propose and vote on amendments to the actual text. H.R. 1 bypassed this process for its final consolidated form — members voted without any committee-level debate on the merged package.",
+    color: "#cc0000",
+  },
+  {
+    skipped: "Full CBO score before the vote",
+    what_it_means: "The Congressional Budget Office's complete analysis — which ultimately projected $3.3T in deficit increases — was not fully published before the House floor vote. Members voted on a multi-trillion dollar bill without seeing the official cost estimate.",
+    color: "#cc0000",
+  },
+  {
+    skipped: "Public hearings on merged text",
+    what_it_means: "While individual committees held hearings on component provisions, no public hearing was held on the final 1,116-page consolidated text. No witnesses could testify on how provisions would interact. No independent experts could flag unintended consequences in the merged language.",
+    color: "#ea580c",
+  },
+  {
+    skipped: "72-hour reading period (House rules waived)",
+    what_it_means: "House rules normally require a 72-hour waiting period between when a bill's text is available and when it can come to the floor. This rule was waived by the Rules Committee at 3am, compressing the review window to roughly 8 hours.",
+    color: "#ea580c",
+  },
+  {
+    skipped: "Senate 60-vote threshold (via reconciliation)",
+    what_it_means: "The bill was structured as budget reconciliation legislation, which requires only 50 Senate votes (plus the Vice President's tie-breaker) rather than the normal 60 needed to overcome a filibuster. This is a legitimate but narrow procedural vehicle that limits what provisions can be included.",
+    color: "#d97706",
+  },
+  {
+    skipped: "Minority amendment opportunities",
+    what_it_means: "Democrats were allowed no amendments on the House floor. Under the closed rule approved at 3am, every Democratic amendment was blocked. Hundreds of members representing roughly half the country had zero ability to change a single word of a $3.3 trillion bill.",
+    color: "#d97706",
+  },
+];
+
 const MOODY_CONTEXT = [
   { event: "US Credit Rating Downgrade", date: "May 16, 2025", org: "Moody's", detail: "Moody's downgraded the US sovereign credit rating from Aaa to Aa1 — the last major agency to maintain the top rating. Cited unsustainable fiscal trajectory and the inability of successive administrations to reverse deficit growth. The Big Beautiful Bill's passage prospects were explicitly cited as a negative factor." },
   { event: "CBO Score Release", date: "May 2025", org: "CBO (bipartisan)", detail: "The nonpartisan Congressional Budget Office scored the bill as adding $3.3 trillion to the federal deficit over 10 years, with the top 1% receiving 65% of the total tax cut benefits while the bottom 40% receive less than 5% combined." },
@@ -282,6 +353,124 @@ export default function BigBillPage() {
           </div>
         </div>
       </header>
+
+      {/* ── RUSHED THROUGH CONGRESS ─────────────────────────────────────── */}
+      <section className="space-y-6">
+        {/* Alert banner */}
+        <div className="border-8 border-destructive bg-destructive text-destructive-foreground p-5 flex flex-col md:flex-row items-start md:items-center gap-6">
+          <div className="flex items-center gap-4 shrink-0">
+            <Clock className="w-14 h-14 shrink-0" strokeWidth={3} />
+            <div>
+              <p className="text-xs font-black uppercase tracking-widest opacity-70">Democrats given</p>
+              <p className="text-7xl font-black tracking-tighter leading-none">4 HRS</p>
+              <p className="text-sm font-black uppercase tracking-wider">to read 1,116 pages</p>
+            </div>
+          </div>
+          <div className="border-l-0 md:border-l-4 border-t-4 md:border-t-0 border-white/40 pt-4 md:pt-0 md:pl-6 space-y-1">
+            <p className="text-base font-black uppercase tracking-wide">
+              That's 13 seconds per page.
+            </p>
+            <p className="text-sm font-bold leading-relaxed opacity-90">
+              The 1,116-page text of H.R. 1 was released at approximately 11pm on May 21, 2025.
+              The House passed it at approximately 7:30am the next morning — less than 9 hours later.
+              The 72-hour reading rule was waived. No public hearings were held on the final text.
+              The full CBO score was not available before the vote.
+            </p>
+          </div>
+        </div>
+
+        {/* Speed math callout */}
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+          {[
+            { label: "Pages in the bill",        value: "1,116",    sub: "total pages",              color: "border-foreground bg-foreground text-background" },
+            { label: "Hours to read it",          value: "~8",       sub: "from text drop to vote",   color: "border-destructive bg-destructive/5 text-destructive" },
+            { label: "Seconds per page",          value: "25 sec",   sub: "if you read every second", color: "border-orange-600 bg-orange-600/5 text-orange-600" },
+            { label: "Margin of passage",         value: "215–214",  sub: "one vote margin",          color: "border-amber-600 bg-amber-600/5 text-amber-600" },
+          ].map((s) => (
+            <div key={s.label} className={`border-4 p-4 ${s.color}`}>
+              <p className="text-xs font-black uppercase tracking-widest opacity-60 mb-1">{s.label}</p>
+              <p className="text-4xl font-black tracking-tight leading-none">{s.value}</p>
+              <p className="text-xs font-bold uppercase mt-2 opacity-70">{s.sub}</p>
+            </div>
+          ))}
+        </div>
+
+        {/* Overnight timeline */}
+        <div>
+          <h3 className="text-2xl uppercase tracking-wider border-b-4 border-border pb-3 mb-5 flex items-center gap-3">
+            <Moon className="w-7 h-7 text-destructive" strokeWidth={3} />
+            The Overnight Timeline — May 21–22, 2025
+          </h3>
+          <div className="relative pl-8 space-y-0">
+            {/* Vertical line */}
+            <div className="absolute left-3 top-2 bottom-2 w-1 bg-border" />
+            {LEGISLATIVE_TIMELINE.map((item, i) => (
+              <div key={i} className="relative pb-8 last:pb-0">
+                {/* Dot */}
+                <div
+                  className="absolute -left-5 top-1.5 w-4 h-4 border-4 border-background"
+                  style={{ backgroundColor: item.color }}
+                />
+                <div className="border-4 border-border p-4 space-y-2" style={{ borderLeftColor: item.color, borderLeftWidth: 6 }}>
+                  <div className="flex flex-wrap items-baseline gap-3">
+                    <span className="text-xl font-black tabular-nums" style={{ color: item.color }}>{item.time}</span>
+                    <span className="text-xs font-bold uppercase tracking-widest text-muted-foreground">{item.date}</span>
+                  </div>
+                  <p className="font-black uppercase tracking-wide text-sm">{item.event}</p>
+                  <p className="text-sm font-semibold leading-relaxed text-muted-foreground">{item.detail}</p>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        {/* What was skipped */}
+        <div>
+          <h3 className="text-2xl uppercase tracking-wider border-b-4 border-border pb-3 mb-5 flex items-center gap-3">
+            <AlertOctagon className="w-7 h-7 text-destructive" strokeWidth={3} />
+            What Normal Process Looks Like — and What Was Skipped
+          </h3>
+          <div className="space-y-3">
+            {PROCEDURAL_SHORTCUTS.map((item) => (
+              <div key={item.skipped} className="border-4 border-border grid grid-cols-1 md:grid-cols-[280px_1fr] overflow-hidden">
+                <div className="p-4 border-b-4 md:border-b-0 md:border-r-4 border-border flex items-start gap-3" style={{ backgroundColor: item.color + "18" }}>
+                  <div className="w-5 h-5 border-4 shrink-0 mt-0.5 flex items-center justify-center" style={{ borderColor: item.color, backgroundColor: item.color }}>
+                    <span className="text-white font-black text-xs">✕</span>
+                  </div>
+                  <p className="font-black uppercase tracking-wide text-sm leading-snug" style={{ color: item.color }}>{item.skipped}</p>
+                </div>
+                <div className="p-4">
+                  <p className="text-sm font-semibold leading-relaxed text-muted-foreground">{item.what_it_means}</p>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        {/* Democratic floor reaction quote */}
+        <div className="border-4 border-border p-6 bg-muted/20 space-y-4">
+          <div className="flex items-center gap-3 border-b-4 border-border pb-4">
+            <FileText className="w-6 h-6 shrink-0 text-muted-foreground" />
+            <p className="text-xs font-black uppercase tracking-widest text-muted-foreground">Floor reactions — House members, May 22, 2025</p>
+          </div>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            {[
+              { speaker: "Rep. Hakeem Jeffries (D-NY), House Minority Leader", quote: "Republicans are trying to jam through a bill that raises taxes on working families, cuts Medicaid for millions of Americans, and explodes the national debt. They don't want the American people to know what is in this bill — that's why they dropped it in the dead of night." },
+              { speaker: "Rep. Jim McGovern (D-MA), Rules Committee Ranking Member", quote: "We are being asked to vote on a 1,100-page bill that we received in the middle of the night. I don't care how long you've been in Congress — no one has read this bill. No one. This is a mockery of the legislative process." },
+              { speaker: "Rep. Thomas Massie (R-KY) — voted NO", quote: "I will not vote for a bill I haven't read. That's my rule. This is 1,116 pages and we got it last night. I don't know what's in it. My constituents deserve a representative who reads the bills he votes on." },
+              { speaker: "Rep. Rosa DeLauro (D-CT)", quote: "People will die because of this bill. Medicaid cuts will close rural hospitals. This was passed in the dark — literally in the dark — because they could not pass it in the light of day." },
+            ].map((q) => (
+              <div key={q.speaker} className="border-4 border-border p-4 space-y-3">
+                <p className="text-sm font-semibold leading-relaxed italic">"{q.quote}"</p>
+                <p className="text-xs font-black uppercase tracking-wider text-muted-foreground border-t-2 border-border pt-2">— {q.speaker}</p>
+              </div>
+            ))}
+          </div>
+          <p className="text-xs font-bold uppercase tracking-wider text-muted-foreground">
+            Note: Quotes reflect public floor statements and press releases. Massie's vote and statement are on the congressional record. Democratic quotes are representative of widely-reported remarks.
+          </p>
+        </div>
+      </section>
 
       {/* CBO Headline Stats */}
       <section className="space-y-4">
