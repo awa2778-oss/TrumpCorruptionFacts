@@ -14,7 +14,7 @@ export default function ActionDetailScreen() {
   const { id } = useLocalSearchParams<{ id: string }>();
   const router  = useRouter();
   const colors  = useColors();
-  const { data: action, isLoading, error } = useGetAction({ id: Number(id) });
+  const { data: action, isLoading, error } = useGetAction(Number(id));
 
   const S = makeStyles(colors);
 
