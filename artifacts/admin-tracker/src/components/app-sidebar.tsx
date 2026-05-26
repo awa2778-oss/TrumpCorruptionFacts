@@ -43,7 +43,7 @@ export function AppSidebar() {
   return (
     <Sidebar className="border-r-4 border-border">
       <SidebarHeader className="p-4 border-b-4 border-border bg-primary text-primary-foreground">
-        <h2 className="text-3xl tracking-wide uppercase drop-shadow-md">Admin Tracker</h2>
+        <h2 className="text-3xl tracking-wide uppercase drop-shadow-md">TrumpCorruptionFacts</h2>
         {/* Desktop / full-site button */}
         <button
           onClick={openFullSite}

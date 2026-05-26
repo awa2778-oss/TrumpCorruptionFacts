@@ -218,7 +218,7 @@ export function exportAllData(
   // ── Sheet 8: README / Legend ──────────────────────────────────────────────
   const readmeData = [
     { "Field": "Exported on", "Description": today },
-    { "Field": "Source", "Description": "Administration Action Tracker — Trump 2025" },
+    { "Field": "Source", "Description": "TrumpCorruptionFacts — Trump 2025" },
     { "Field": "", "Description": "" },
     { "Field": "AASI", "Description": "Administration Action Severity Index (0–100). Formula: (category_weight × 30) + (status_multiplier × 30) + (court_challenged × 20) + (factuality_adj × 10) + (recency × 10)" },
     { "Field": "RIS", "Description": "Retribution Intensity Score (0–100). Formula: (years_factor × 30) + (connection_weight × 35) + (outcome_severity × 25) + (judicial_response × 10)" },
